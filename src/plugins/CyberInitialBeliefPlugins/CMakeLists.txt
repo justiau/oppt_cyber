@@ -1,0 +1,2 @@
+ADD_INITIAL_BELIEF_PLUGIN(CyberInitialBeliefPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberInitialBeliefPlugin.cpp)
+target_include_directories(CyberInitialBeliefPlugin PRIVATE ${PROJECT_SOURCE_DIR})

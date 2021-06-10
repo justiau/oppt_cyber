@@ -1,0 +1,2 @@
+ADD_OBSERVATION_PLUGIN(CyberObservationPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberObservationPlugin.cpp)
+target_include_directories(CyberObservationPlugin PRIVATE ${PROJECT_SOURCE_DIR})

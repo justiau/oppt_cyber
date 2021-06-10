@@ -1,0 +1,2 @@
+ADD_TRANSITION_PLUGIN(CyberTransitionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionPlugin.cpp)
+target_include_directories(CyberTransitionPlugin PRIVATE ${PROJECT_SOURCE_DIR})

@@ -1,0 +1,3 @@
+[submodule "src/plugins/CyberUtils/yaml-cpp"]
+	path = src/plugins/CyberUtils/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp

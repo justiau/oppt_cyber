@@ -1,0 +1,2 @@
+ADD_REWARD_PLUGIN(CyberRewardPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberRewardPlugin.cpp)
+target_include_directories(CyberRewardPlugin PRIVATE ${PROJECT_SOURCE_DIR})

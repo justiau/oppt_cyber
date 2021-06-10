@@ -1,0 +1,2 @@
+ADD_HEURISTIC_PLUGIN(CyberHeuristicPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberHeuristicPlugin.cpp)
+target_include_directories(CyberHeuristicPlugin PRIVATE ${PROJECT_SOURCE_DIR})

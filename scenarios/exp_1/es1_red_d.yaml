@@ -1,0 +1,387 @@
+action_space:
+  IIS_ftp_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: windows
+      port_21: open
+    prob_success: 0.999
+  IIS_http_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: windows
+      port_80: open
+    prob_success: 0.999
+  apache_openBSD_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: openBSD
+      port_80: open
+    prob_success: 0.999
+  elastic_search_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: windows
+      port_9200: open
+    prob_success: 0.999
+  manageEngine9_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: windows
+      port_8020: open
+    prob_success: 0.999
+  openBDSD_ssh_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: openBSD
+      port_22: open
+    prob_success: 0.999
+  os_scan:
+    cost: 50
+    effects:
+      failure:
+        next_state: {}
+        observation:
+          os: none
+      success:
+        next_state: {}
+        observation:
+          os: actual
+    preconditions: {}
+    prob_success: 1.0
+  port_21_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_21: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_21: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_21: open
+    prob_success: 1.0
+  port_22_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_22: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_22: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_22: open
+    prob_success: 1.0
+  port_3632_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_3632: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_3632: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_3632: open
+    prob_success: 1.0
+  port_512_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_512: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_512: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_512: open
+    prob_success: 1.0
+  port_8020_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8020: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_8020: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_8020: open
+    prob_success: 1.0
+  port_80_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_80: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_80: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_80: open
+    prob_success: 1.0
+  port_8282_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8282: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_8282: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_8282: open
+    prob_success: 1.0
+  port_9200_scan:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_9200: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_9200: open
+        observation:
+          port_obs: open
+    preconditions:
+      port_9200: open
+    prob_success: 1.0
+  rsh_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: linux
+      port_512: open
+    prob_success: 0.999
+  terminate:
+    cost: 0
+    effects:
+      failure:
+        next_state:
+          terminal: false
+        observation: {}
+      success:
+        next_state:
+          terminal: true
+        observation: {}
+    preconditions: {}
+    prob_success: 1.0
+  tomcat_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: windows
+      port_8282: open
+    prob_success: 0.999
+  unreal_ircd_3281_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: linux
+      port_3632: open
+    prob_success: 0.999
+  vsftpd_234_exploit:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          exploited: false
+        observation: {}
+      success:
+        next_state:
+          exploited: true
+        observation: {}
+    preconditions:
+      os: linux
+      port_21: open
+    prob_success: 0.999
+decay_step: 0.0
+description: Single host scenario with 10 exploits. |A|=20 |S|=3072 |O|=6
+discount: 0.95
+observation_space:
+  non_state_obs:
+    port_obs: &id001
+    - open
+    - closed
+  state_obs:
+  - os
+state_space:
+  exploited:
+    decay: 0.0
+    fully_obs: true
+    initial_value: false
+    values:
+    - true
+    - false
+  os:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values:
+    - linux
+    - windows
+    - openBSD
+  port_21:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_22:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_3632:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_512:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_80:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_8020:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_8282:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_9200:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  terminal:
+    decay: 0.0
+    fully_obs: true
+    initial_value: false
+    values:
+    - true
+    - false
+terminal_states:
+  exploited:
+    reward: 9000
+    state:
+      exploited: true
+  terminal:
+    reward: 0
+    state:
+      terminal: true

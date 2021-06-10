@@ -1,0 +1,2 @@
+ADD_TERMINAL_PLUGIN(CyberTerminalPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTerminalPlugin.cpp)
+target_include_directories(CyberTerminalPlugin PRIVATE ${PROJECT_SOURCE_DIR})

@@ -1,0 +1,204 @@
+description: "Network security game: red"
+discount: 0.95
+state_space:
+  httpd_attacked:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  httpd_hacked:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  ftpd_attacked:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  ftpd_hacked:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  webserver_sniffer_installed:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  workstation_hacked:
+    values:
+      - True
+      - False
+    decay: 0.0
+    one_way_decay: False
+    initial_value: False
+    reward:
+      - 0
+      - 0
+  workstation_data_stolen:
+    values:
+      - True
+      - False
+    decay: 0.0
+    initial_value: False
+terminal_states:
+  goal:
+    state:
+      workstation_data_stolen: True
+    reward: 999
+observation_space:
+  state_obs: []
+  non_state_obs:
+    obs_result:
+      - success
+      - failure
+action_space:
+  attack_httpd:
+    preconditions: {}
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          httpd_attacked: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          httpd_attacked: False
+    prob_success: 1.0
+    cost: 10
+  continue_httpd_attack:
+    preconditions:
+      httpd_attacked: True
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          httpd_hacked: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          httpd_hacked: False
+    prob_success: 0.5
+    cost: 10
+  attack_ftpd:
+    preconditions: {}
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          ftpd_attacked: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          ftpd_attacked: False
+    prob_success: 1.0
+    cost: 10
+  continue_ftpd_attack:
+    preconditions:
+      ftpd_attacked: True
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          ftpd_hacked: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          ftpd_hacked: False
+    prob_success: 0.5
+    cost: 10
+  install_sniffer:
+    preconditions:
+      optional:
+        httpd_hacked: True
+        ftpd_hacked: True
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          webserver_sniffer_installed: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          webserver_sniffer_installed: False
+    prob_success: 0.5
+    cost: 10
+  crack_workstation_root_password:
+    preconditions:
+      webserver_sniffer_installed: True
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          workstation_hacked: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          workstation_hacked: False
+    prob_success: 0.9
+    cost: 10
+  steal_data:
+    preconditions:
+      workstation_hacked: True
+    effects:
+      success:
+        observation:
+          obs_result: success
+        next_state:
+          workstation_data_stolen: True
+      failure:
+        observation:
+          obs_result: failure
+        next_state:
+          workstation_data_stolen: False
+    prob_success: 0.999
+    cost: 10
+  do_nothing:
+    preconditions: {}
+    effects:
+      success:
+        observation: {}
+        next_state: {}
+      failure:
+        observation: {}
+        next_state: {}
+    prob_success: 1.0
+    cost: 0

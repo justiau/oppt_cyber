@@ -1,0 +1,421 @@
+action_space:
+  open_port_21:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_21: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_21: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_21:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_21: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_21: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_22:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_22: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_22: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_22:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_22: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_22: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_80:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_80: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_80: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_80:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_80: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_80: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_512:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_512: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_512: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_512:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_512: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_512: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_3632:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_3632: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_3632: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_3632:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_3632: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_3632: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_8020:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8020: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_8020: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_8020:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8020: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_8020: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_8282:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8282: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_8282: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_8282:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_8282: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_8282: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+
+  open_port_9200:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_9200: closed
+        observation:
+          port_obs: closed
+      success:
+        next_state:
+          port_9200: open
+        observation:
+          port_obs: open
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  close_port_9200:
+    cost: 10
+    effects:
+      failure:
+        next_state:
+          port_9200: open
+        observation:
+          port_obs: open
+      success:
+        next_state:
+          port_9200: closed
+        observation:
+          port_obs: closed
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  change_os_linux:
+    cost: 50
+    effects:
+      failure:
+        next_state: {}
+        observation:
+          os: actual
+      success:
+        next_state:
+          os: linux
+        observation:
+          os: linux
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  change_os_windows:
+    cost: 50
+    effects:
+      failure:
+        next_state: {}
+        observation:
+          os: actual
+      success:
+        next_state:
+          os: windows
+        observation:
+          os: windows
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  change_os_openBSD:
+    cost: 50
+    effects:
+      failure:
+        next_state: {}
+        observation:
+          os: actual
+      success:
+        next_state:
+          os: openBSD
+        observation:
+          os: openBSD
+    preconditions:
+      terminal: false
+      exploited: false
+    prob_success: 1.0
+  do_nothing:
+    cost: 0
+    effects:
+      failure:
+        next_state: {}
+        observation: {}
+      success:
+        next_state: {}
+        observation: {}
+    preconditions: {}
+    prob_success: 1.0
+decay_step: 0.0
+description: Single host scenario with 10 exploits. |A|=20 |S|=3072 |O|=6
+discount: 0.95
+observation_space:
+  non_state_obs:
+    port_obs: &id001
+    - open
+    - closed
+  state_obs:
+  - os
+state_space:
+  exploited:
+    decay: 0.0
+    fully_obs: true
+    initial_value: false
+    values:
+    - true
+    - false
+  os:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values:
+    - linux
+    - windows
+    - openBSD
+  port_21:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_22:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_3632:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_512:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_80:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_8020:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_8282:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  port_9200:
+    decay: 0.0
+    fully_obs: false
+    initial_value: uniform
+    values: *id001
+  terminal:
+    decay: 0.0
+    fully_obs: true
+    initial_value: false
+    values:
+    - true
+    - false
+terminal_states:
+  exploited:
+    reward: 9000
+    state:
+      exploited: true
+  terminal:
+    reward: 0
+    state:
+      terminal: true

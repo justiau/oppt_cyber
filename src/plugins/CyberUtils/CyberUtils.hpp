@@ -2,6 +2,7 @@
 #ifndef _CYBER_UTILS_HPP_
 #define _CYBER_UTILS_HPP_
 #include "oppt/plugin/PluginOptions.hpp"
+#include "ScenarioParser.hpp"
 
 namespace oppt
 {
@@ -12,6 +13,9 @@ public:
     CyberOptions() = default;
 
     virtual ~CyberOptions() = default;
+
+    // path to the cyber scenario file
+    std::string scenarioPath;
 
     // upperbound and lowerbound for initial belief values
     VectorFloat upperBound;
@@ -28,11 +32,16 @@ public:
     static std::unique_ptr<options::OptionParser> makeParser() {
         std::unique_ptr<options::OptionParser> parser =
             PluginOptions::makeParser();
-        addIDPluginOptions(parser.get());
+        addCyberPluginOptions(parser.get());
         return std::move(parser);
     }
 
-    static void addIDPluginOptions(options::OptionParser* parser) {
+    static void addCyberPluginOptions(options::OptionParser* parser) {
+        /*** Cyber scenario parser options ***/
+        parser->addOption<std::string>("cyberScenarioOptions",
+                                        "scenarioPath",
+                                        &CyberOptions::scenarioPath);
+
         /*** Initial belief options ***/
 
         // Lower starting bound
@@ -63,6 +72,14 @@ public:
                                          &CyberOptions::illegalMovePenalty);
 
     }
+
+    void getScenario() {
+        if (scenarioPath.empty())
+            ERROR("getScenario called before path was set.");
+        ScenarioParser scenarioParser;
+        scenarioParser.parse(scenarioPath);
+    }
+
 };
 
 }

@@ -21,6 +21,8 @@ public:
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         lowerBound = generalOptions->lowerBound;
         upperBound = generalOptions->upperBound;
+        generalOptions->getScenario();
+        exit(1);
         return true;
     }
 

@@ -32,13 +32,36 @@ public:
     std::vector<std::string> stateObs;
 
     Variable getStateVar(std::string vname) {
-        if (state.find(vname) == state.end())
+        if (state.find(vname) == state.end()) {
+            std::cout << vname << std::endl;
+            print_map(state);
             throw std::invalid_argument("Variable name not found in state variables");
+        }
         return state[vname];
         
     }
 
+    Variable getObsVar(std::string vname) {
+        if (nonStateObs.find(vname) == nonStateObs.end()) {
+            std::cout << vname << std::endl;
+            print_map(nonStateObs);
+            throw std::invalid_argument("Variable name not found in observation variables");
+        }
+        return nonStateObs[vname];
+    }
+
+    Variable getVar(std::string vname) {
+        if (state.find(vname) != state.end()) {
+            return state[vname];
+        } else if (nonStateObs.find(vname) != nonStateObs.end()) {
+            return nonStateObs[vname];
+        }
+        throw std::invalid_argument("Variable name not found in state or observation variables");
+    }
+
     void show() {
+        std::cout << "Number of Actions: " << nActions << std::endl;
+        std::cout << "Number of States: " << nStates << std::endl;
         showDiscount();
         showStates();
         showActions();

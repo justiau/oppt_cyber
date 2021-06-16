@@ -3,17 +3,16 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <utility>
 #include "Variable.hpp"
 
 class Action {
 public:
-    Action(std::string name, std::vector<Assignment> onFail, std::vector<Assignment> onSuccess, std::vector<Assignment> preconditions, float cost, float probSuccess)
+    Action(std::string name, float cost, float probSuccess, std::vector<Assignment> preconditions)
         : name_(name)
-        , onFail_(onFail)
-        , onSuccess_(onSuccess)
-        , preconditions_(preconditions)
         , cost_(cost)
-        , probSuccess_(probSuccess){
+        , probSuccess_(probSuccess)
+        , preconditions_(preconditions){
     };
 
     virtual ~Action() = default;
@@ -24,18 +23,33 @@ public:
 
     float probSuccess_;
 
-    std::vector<Assignment> onFail_;
+    void setFailEffects(std::vector<Assignment> onFailState, std::vector<Assignment> onFailObs) {
+        onFail_ = std::make_pair(onFailState, onFailObs);
+    }
 
-    std::vector<Assignment> onSuccess_;
+    void setSuccessEffects(std::vector<Assignment> onSuccessState, std::vector<Assignment> onSuccessObs) {
+        onSuccess_ = std::make_pair(onSuccessState, onSuccessObs);
+    }
+
+    // onFail first contains state transitions
+    // onFail second contains observations
+    std::pair<std::vector<Assignment>, std::vector<Assignment>> onFail_;
+
+    // std::vector<Assignment> onSuccess_;
+    std::pair<std::vector<Assignment>, std::vector<Assignment>> onSuccess_;
 
     std::vector<Assignment> preconditions_;
 
     friend std::ostream &operator<<(std::ostream &os, Action const &a) {
         os << a.name_ << std::endl;
-        os << "onFail: " << std::endl;
-        print_vector(a.onFail_);
-        os << "onSuccess: " << std::endl;
-        print_vector(a.onSuccess_);
+        os << "onFailState: " << std::endl;
+        print_vector(a.onFail_.first);
+        os << "onFailObs: " << std::endl;
+        print_vector(a.onFail_.second);
+        os << "onSuccessState: " << std::endl;
+        print_vector(a.onSuccess_.first);
+        os << "onSuccessObs: " << std::endl;
+        print_vector(a.onSuccess_.second);
         os << "preconditions: " << std::endl;
         print_vector(a.preconditions_);
         return os;

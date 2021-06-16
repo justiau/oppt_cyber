@@ -73,11 +73,12 @@ public:
 
     }
 
-    void getScenario() {
+    Scenario* getScenario() {
         if (scenarioPath.empty())
             ERROR("getScenario called before path was set.");
         ScenarioParser scenarioParser;
         scenarioParser.parse(scenarioPath);
+        return scenarioParser.get();
     }
 
 };

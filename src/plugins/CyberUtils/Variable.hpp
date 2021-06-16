@@ -62,14 +62,10 @@ public:
     }
 
     Assignment makeAssign(std::string val) {
-        if (index_.find(val) == index_.end()) {
-            std::cout << name_ << std::endl;
-            print_vector(values_);
-            std::cout << std::endl;
-            std::cout << val << std::endl;
-            throw std::invalid_argument("Invalid value provided to makeAssign");
+        if (index_.find(val) != index_.end() || (val == "none" || val == "actual")) {
+            return Assignment(name_, val);
         }
-        return Assignment(name_, val);
+        throw std::invalid_argument("Invalid value provided to makeAssign");
     }
 
     void setAssign(Assignment a) {

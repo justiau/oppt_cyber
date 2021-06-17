@@ -3,8 +3,8 @@
 #include "yaml-cpp/yaml.h"
 #include "ScenarioUtils.hpp"
 #include "Scenario.hpp"
-#include "Variable.hpp"
-#include "Action.hpp"
+#include "SVar.hpp"
+#include "SAction.hpp"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -44,7 +44,7 @@ public:
         for(YAML::const_iterator si = state.begin(); si != state.end(); ++si) {
             string vname = si->first.as<string>();
             vector<string> values = si->second["values"].as<vector<string>>();
-            Variable var(vname, values);
+            SVar var(vname, values);
             var.decay = si->second["decay"].as<float>();
             var.fullyObs = si->second["fully_obs"].as<bool>();
             var.initValue = si->second["initial_value"].as<string>();
@@ -61,7 +61,7 @@ public:
             float probSuccess = ai->second["prob_success"].as<float>();
             YAML::Node preNode = ai->second["preconditions"];
             vector<Assignment> preconditions = extractAssignments(preNode);
-            Action action(aname, cost, probSuccess, preconditions);
+            SAction action(aname, cost, probSuccess, preconditions);
             // find fail node and add on fail state and observation changes
             YAML::Node failNode = ai->second["effects"]["failure"];
             vector<Assignment> onFailState =  extractAssignments(failNode["next_state"]);
@@ -82,7 +82,7 @@ public:
         for(YAML::const_iterator ci = node.begin(); ci != node.end(); ++ci) {
             string name = ci->first.as<string>();
             string val = ci->second.as<string>();
-            Variable var = scenario->getVar(name);
+            SVar var = scenario->getVar(name);
             assignments.push_back(var.makeAssign(val));
         }
         return assignments;
@@ -94,7 +94,7 @@ public:
         for(YAML::const_iterator oi = nsObs.begin(); oi != nsObs.end(); ++oi) {
             string oname = oi->first.as<string>();
             vector<string> values = oi->second.as<vector<string>>();
-            Variable var(oname, values);
+            SVar var(oname, values);
             scenario->nonStateObs.insert(std::make_pair(oname, var));
         }
         // state obs node

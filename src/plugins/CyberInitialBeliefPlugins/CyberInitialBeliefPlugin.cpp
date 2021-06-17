@@ -19,26 +19,30 @@ public:
     virtual bool load(const std::string& optionsFile) override {
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
-        lowerBound = generalOptions->lowerBound;
-        upperBound = generalOptions->upperBound;
-        generalOptions->getScenario();
+        scenario = generalOptions->getScenario();
+        // lowerBound = generalOptions->lowerBound;
+        // upperBound = generalOptions->upperBoun
         exit(1);
         return true;
     }
 
     virtual RobotStateSharedPtr sampleAnInitState() override {
-        std::uniform_int_distribution<unsigned int> dist(lowerBound[0],upperBound[0]);
-
+        VectorFloat initStateVec;
         auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
-        VectorFloat initStateVec = VectorFloat({dist(*(randomGenerator.get()))});
-        unsigned int stateDimension = robotEnvironment_->getRobot()->getStateSpace()->getNumDimensions();
-        if (initStateVec.size() != stateDimension)
-            ERROR("Init state size doesnt fit");
+        for(int i=0; i < nStates; i++) {
+            std::uniform_int_distribution<unsigned int> dist(lowerBound.at(i),upperBound.at(i));
+            initStateVec.push_back(dist(*(randomGenerator.get())));
+        }
+        // unsigned int stateDimension = robotEnvironment_->getRobot()->getStateSpace()->getNumDimensions();
+        // if (initStateVec.size() != stateDimension)
+        //     ERROR("Init state size doesnt fit");
         RobotStateSharedPtr initState(new VectorState(initStateVec));
         return initState;
     }
 
 private:
+    Scenario* scenario;
+    int nStates;
     VectorFloat lowerBound;
     VectorFloat upperBound;
 };

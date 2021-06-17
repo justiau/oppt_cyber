@@ -4,18 +4,18 @@
 #include <vector>
 #include <string>
 #include <utility>
-#include "Variable.hpp"
+#include "SVar.hpp"
 
-class Action {
+class SAction {
 public:
-    Action(std::string name, float cost, float probSuccess, std::vector<Assignment> preconditions)
+    SAction(std::string name, float cost, float probSuccess, std::vector<Assignment> preconditions)
         : name_(name)
         , cost_(cost)
         , probSuccess_(probSuccess)
         , preconditions_(preconditions){
     };
 
-    virtual ~Action() = default;
+    virtual ~SAction() = default;
 
     std::string name_;
 
@@ -35,12 +35,11 @@ public:
     // onFail second contains observations
     std::pair<std::vector<Assignment>, std::vector<Assignment>> onFail_;
 
-    // std::vector<Assignment> onSuccess_;
     std::pair<std::vector<Assignment>, std::vector<Assignment>> onSuccess_;
 
     std::vector<Assignment> preconditions_;
 
-    friend std::ostream &operator<<(std::ostream &os, Action const &a) {
+    friend std::ostream &operator<<(std::ostream &os, SAction const &a) {
         os << a.name_ << std::endl;
         os << "onFailState: " << std::endl;
         print_vector(a.onFail_.first);

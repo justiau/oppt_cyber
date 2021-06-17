@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <iostream>
-#include "Action.hpp"
-#include "Variable.hpp"
+#include "SAction.hpp"
+#include "SVar.hpp"
 #include "ScenarioUtils.hpp"
 
 class Scenario {
@@ -21,17 +21,17 @@ public:
 
     int nObservations;
 
-    float discount;    
+    float discount;
 
-    std::unordered_map<std::string, Variable> state;
+    std::unordered_map<std::string, SVar> state;
 
-    std::unordered_map<std::string, Action> actions;
+    std::unordered_map<std::string, SAction> actions;
 
-    std::unordered_map<std::string, Variable> nonStateObs;
+    std::unordered_map<std::string, SVar> nonStateObs;
 
     std::vector<std::string> stateObs;
 
-    Variable getStateVar(std::string vname) {
+    SVar getStateVar(std::string vname) {
         if (state.find(vname) == state.end()) {
             std::cout << vname << std::endl;
             print_map(state);
@@ -41,7 +41,7 @@ public:
         
     }
 
-    Variable getObsVar(std::string vname) {
+    SVar getObsVar(std::string vname) {
         if (nonStateObs.find(vname) == nonStateObs.end()) {
             std::cout << vname << std::endl;
             print_map(nonStateObs);
@@ -50,7 +50,7 @@ public:
         return nonStateObs[vname];
     }
 
-    Variable getVar(std::string vname) {
+    SVar getVar(std::string vname) {
         if (state.find(vname) != state.end()) {
             return state[vname];
         } else if (nonStateObs.find(vname) != nonStateObs.end()) {

@@ -22,11 +22,11 @@ std::ostream &operator<<(std::ostream &os, Assignment const &a) {
     return os;
 }
 
-class Variable {
+class SVar {
 public:
-    Variable() = default;
+    SVar() = default;
 
-    Variable(std::string name, std::vector<std::string> values)
+    SVar(std::string name, std::vector<std::string> values)
         : name_(name)
         , values_(values) {
         for (std::size_t i=0; i != values_.size(); ++i) {
@@ -34,7 +34,7 @@ public:
         }
     };
     
-    virtual ~Variable() = default;
+    virtual ~SVar() = default;
 
     std::string name_;
 
@@ -79,7 +79,7 @@ public:
         return false;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, Variable const &v) {
+    friend std::ostream &operator<<(std::ostream &os, SVar const &v) {
         os << v.name_ << std::endl;
         print_vector(v.values_);
         return os;

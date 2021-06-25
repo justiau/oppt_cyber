@@ -24,7 +24,7 @@ public:
         parseStateSpace();
         parseObservationSpace();
         parseActionSpace();
-        scenario->show();
+        // scenario->show();
     }
 
     Scenario* get() {

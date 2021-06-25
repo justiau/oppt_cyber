@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <stdexcept>
 #include <iostream>
 #include "SAction.hpp"
@@ -23,11 +24,17 @@ public:
 
     float discount;
 
-    std::unordered_map<std::string, SVar> state;
+    // std::unordered_map<std::string, SVar> state;
+    std::map<std::string, SVar> state;
+    // std::vector<SVar> state;
 
-    std::unordered_map<std::string, SAction> actions;
+    // std::unordered_map<std::string, SAction> actions;
+    std::map<std::string, SAction> actions;
+    // std::vector<SAction> actions;
 
-    std::unordered_map<std::string, SVar> nonStateObs;
+    // std::unordered_map<std::string, SVar> nonStateObs;
+    std::map<std::string, SVar> nonStateObs;
+    // std::vector<SVar> nonStateObs;
 
     std::vector<std::string> stateObs;
 
@@ -91,6 +98,28 @@ public:
     void showStateObs() {
         std::cout << "State Observations: " << std::endl;
         print_vector(stateObs);
+    }
+
+    std::vector<SVar> getStateVars() {
+        std::cout << "Getting states.." << std::endl;
+        std::vector<SVar> vars = get_map_values(state);
+        return vars;
+    }
+
+    std::vector<SAction> getActions() {
+        std::cout << "Getting actions.." << std::endl;
+        std::vector<SAction> acts = get_map_values(acts);
+        return acts;
+    }
+
+    std::vector<float> getActionProbs() {
+        std::cout << "Gettin action probs.." << std::endl;
+        std::vector<SAction> acts = getActions();
+        std::vector<float> probs;
+        for (auto const &a : acts) {
+            probs.push_back(a.probSuccess_);
+        }
+        return probs;
     }
     
 };

@@ -32,6 +32,7 @@ public:
         for (std::size_t i=0; i != values_.size(); ++i) {
             index_[values_[i]] = i;
         }
+        valueCount = values_.size();
     };
     
     virtual ~SVar() = default;
@@ -39,6 +40,8 @@ public:
     std::string name_;
 
     std::vector<std::string> values_;
+
+    int valueCount;
 
     std::unordered_map<std::string, int> index_;
 

@@ -64,11 +64,11 @@ public:
         return getIndex(val) == cindex;
     }
 
-    Assignment makeAssign(std::string val) {
+    Assignment generateAssignment(std::string val) {
         if (index_.find(val) != index_.end() || (val == "none" || val == "actual")) {
             return Assignment(name_, val);
         }
-        throw std::invalid_argument("Invalid value provided to makeAssign");
+        throw std::invalid_argument("Invalid value provided to generateAssignment");
     }
 
     void setAssign(Assignment a) {

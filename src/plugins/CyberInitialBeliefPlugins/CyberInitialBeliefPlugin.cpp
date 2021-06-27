@@ -22,9 +22,9 @@ public:
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
-        nStates = scenario->nStates;
+        nStates = scenario->getStatesize();
         // lower bound all starts at 0
-        lowerBound.resize(scenario->nStates, 0);
+        lowerBound.resize(nStates, 0);
         // upper bound is num of values zero indexed
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (auto it = stateVars.begin(); it != stateVars.end(); ++it) {

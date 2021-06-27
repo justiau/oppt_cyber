@@ -8,7 +8,7 @@ namespace oppt {
 
 class CyberActionSpaceDiscretizer : public ActionSpaceDiscretizer {
 public:
-    CyberActionSpaceDiscretizer(ActionSpaceSharedPtr &actionSce):
+    CyberActionSpaceDiscretizer(ActionSpaceSharedPtr &actionSpace):
         ActionSpaceDiscretizer(actionSpace) {
             LOGGING("Custom Control Host Action Space Discretizer");
     }

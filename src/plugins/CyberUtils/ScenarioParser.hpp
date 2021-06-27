@@ -36,7 +36,7 @@ public:
     }
 
     void parseDiscount() {
-        scenario->discount = root["discount"].as<float>();
+        scenario->setDiscount(root["discount"].as<float>());
     }
 
     void parseStateSpace() {
@@ -48,9 +48,10 @@ public:
             var.decay = si->second["decay"].as<float>();
             var.fullyObs = si->second["fully_obs"].as<bool>();
             var.initValue = si->second["initial_value"].as<string>();
-            scenario->state.insert(std::make_pair(vname, var));
+            // scenario->state.insert(std::make_pair(vname, var));
+            scenario->addStateVar(var);
         }
-        scenario->nStates = state.size();
+        // scenario->nStates = state.size();
     }
 
     void parseActionSpace() {
@@ -72,9 +73,10 @@ public:
             vector<Assignment> onSuccessState = extractAssignments(successNode["next_state"]);
             vector<Assignment> onSuccessObs = extractAssignments(successNode["observation"]);
             action.setSuccessEffects(onSuccessState, onSuccessObs);
-            scenario->actions.insert(std::make_pair(aname, action));
+            // scenario->actions.insert(std::make_pair(aname, action));
+            scenario->addAction(action);
         }
-        scenario->nActions = actions.size();
+        // scenario->nActions = actions.size();
     }
 
     vector<Assignment> extractAssignments(YAML::Node node)  {
@@ -83,7 +85,7 @@ public:
             string name = ci->first.as<string>();
             string val = ci->second.as<string>();
             SVar var = scenario->getVar(name);
-            assignments.push_back(var.makeAssign(val));
+            assignments.push_back(var.generateAssignment(val));
         }
         return assignments;
     }
@@ -95,11 +97,13 @@ public:
             string oname = oi->first.as<string>();
             vector<string> values = oi->second.as<vector<string>>();
             SVar var(oname, values);
-            scenario->nonStateObs.insert(std::make_pair(oname, var));
+            // scenario->nonStateObs.insert(std::make_pair(oname, var));
+            scenario->addNonStateObs(var);
         }
         // state obs node
         YAML::Node sObs = root["observation_space"]["state_obs"];
-        scenario->stateObs = sObs.as<vector<string>>();
+        // scenario->stateObs = sObs.as<vector<string>>();
+        scenario->setStateObs(sObs.as<vector<string>>());
     }
 
 private:

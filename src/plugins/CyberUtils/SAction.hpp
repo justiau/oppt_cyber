@@ -23,14 +23,6 @@ public:
 
     float probSuccess_;
 
-    void setFailEffects(std::vector<Assignment> onFailState, std::vector<Assignment> onFailObs) {
-        onFail_ = std::make_pair(onFailState, onFailObs);
-    }
-
-    void setSuccessEffects(std::vector<Assignment> onSuccessState, std::vector<Assignment> onSuccessObs) {
-        onSuccess_ = std::make_pair(onSuccessState, onSuccessObs);
-    }
-
     // onFail first contains state transitions
     // onFail second contains observations
     std::pair<std::vector<Assignment>, std::vector<Assignment>> onFail_;
@@ -38,6 +30,14 @@ public:
     std::pair<std::vector<Assignment>, std::vector<Assignment>> onSuccess_;
 
     std::vector<Assignment> preconditions_;
+
+    void setFailEffects(std::vector<Assignment> onFailState, std::vector<Assignment> onFailObs) {
+        onFail_ = std::make_pair(onFailState, onFailObs);
+    }
+
+    void setSuccessEffects(std::vector<Assignment> onSuccessState, std::vector<Assignment> onSuccessObs) {
+        onSuccess_ = std::make_pair(onSuccessState, onSuccessObs);
+    }
 
     friend std::ostream &operator<<(std::ostream &os, SAction const &a) {
         os << a.name_ << std::endl;

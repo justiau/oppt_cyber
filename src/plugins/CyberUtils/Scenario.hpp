@@ -6,6 +6,7 @@
 #include <map>
 #include <stdexcept>
 #include <iostream>
+#include <utility>
 #include "SAction.hpp"
 #include "SVar.hpp"
 #include "ScenarioUtils.hpp"
@@ -16,59 +17,157 @@ public:
 
     virtual ~Scenario() = default;
 
-    int nStates;
-
-    int nActions;
-
-    int nObservations;
-
+private:
     float discount;
 
-    // std::unordered_map<std::string, SVar> state;
-    std::map<std::string, SVar> state;
-    // std::vector<SVar> state;
+    std::vector<SVar> state;
+    std::unordered_map<std::string, int> stateIndex;
 
-    // std::unordered_map<std::string, SAction> actions;
-    std::map<std::string, SAction> actions;
-    // std::vector<SAction> actions;
+    std::vector<SAction> actions;
+    std::unordered_map<std::string, int> actionIndex;
 
-    // std::unordered_map<std::string, SVar> nonStateObs;
-    std::map<std::string, SVar> nonStateObs;
-    // std::vector<SVar> nonStateObs;
+    std::vector<SVar> nonStateObs;
+    std::unordered_map<std::string, int> nonStateObsIndex;
 
     std::vector<std::string> stateObs;
 
+public:
+    // read methods
+    float getDiscount() {
+        return discount;
+    }
+
+    int getStateSize() {
+        return state.size();
+    }
+
     SVar getStateVar(std::string vname) {
-        if (state.find(vname) == state.end()) {
+        int i = stateIndex.find(vname);
+        if (i == stateIndex.end()) {
             std::cout << vname << std::endl;
             print_map(state);
             throw std::invalid_argument("Variable name not found in state variables");
         }
-        return state[vname];
+        return state[i];
         
     }
 
     SVar getObsVar(std::string vname) {
-        if (nonStateObs.find(vname) == nonStateObs.end()) {
+        int i = nonStateObsIndex.find(vname);
+        if (i == nonStateObsIndex.end()) {
             std::cout << vname << std::endl;
             print_map(nonStateObs);
             throw std::invalid_argument("Variable name not found in observation variables");
         }
-        return nonStateObs[vname];
+        return nonStateObs[i];
     }
 
     SVar getVar(std::string vname) {
-        if (state.find(vname) != state.end()) {
-            return state[vname];
-        } else if (nonStateObs.find(vname) != nonStateObs.end()) {
-            return nonStateObs[vname];
+        int si = stateIndex.find(vname);
+        int oi = nonStateObsIndex.find(vname);
+        if (si != stateIndex.end()) {
+            return state[si];
+        } else if (oi != nonStateObsIndex.end()) {
+            return nonStateObs[oi];
         }
         throw std::invalid_argument("Variable name not found in state or observation variables");
     }
 
+    std::vector<SVar> getStateVars() {
+        return state;
+    }
+
+    SAction getAction(int aIndex) {
+        if (aIndex >= 0 && aIndex < actions.size()) {
+            return actions[aIndex]
+        }
+        throw std::invalid_argument("Index out of bounds for getAction");
+    }
+
+    SAction getAction(std::string aname) {
+        int i = actionIndex.find(aname);
+        return getAction(i);
+    }
+
+    std::vector<SAction> getActions() {
+        return actions;
+    }
+
+    int getActionsSize() {
+        return actions.size();
+    }
+
+    int getObsSize() {
+        return nonStateObs.size() + stateObs.size();
+    }
+
+    bool isAssignTrue(Assignment a) {
+        SVar v = getStateVar(a.vname);
+        return v.isAssign(a);
+    }
+
+    bool isPreconditionsTrue(std::vector<Assignment> preconditions) {
+        for (auto pre : preconditions) {
+            if (!isAssignTrue(pre)) {
+                // return false on first fail
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // write methods
+    void setDiscount(float d) {
+        discount = d;
+    }
+    
+    void addStateVar(SVar var) {
+        if (stateIndex.find(var.name_) != stateIndex.end()) {
+            throw std::invalid_argument("Variable name to add already exists in state variables");
+        }
+        stateIndex.insert(std::make_pair(var.name_, state.size()));
+        state.push_back(var);
+    }
+
+    void addAction(SAction a) {
+        if (actionIndex.find(a.name_) != actionIndex.end()) {
+            throw std::invalid_argument("Action name to add already exists in action list");
+        }
+        actionIndex.insert(std::make_pair(a.name_, actions.size()));
+        actions.push_back(a);
+    }
+
+    void addNonStateObs(SVar var) {
+        if (nonStateObsIndex.find(var.name_) != nonStateObsIndex.end()) {
+            throw std::invalid_argument("Observation name to add already exists in non state observation variables");
+        }
+        nonStateObsIndex.insert(std::make_pair(var.name_, nonStateObs.size()));
+        nonStateObs.push_back(var);
+    }
+
+    void addStateObs(std::string obsName) {
+        if (stateIndex.find(obsName) == stateIndex.end()) {
+            throw std::invalid_argument("State observation name to add doesn't exist in state variables");
+        }
+        stateObs.push_back(obsName);
+    }
+
+    void setStateObs(std::vector<std::string> obs) {
+        stateObs = obs;
+    }
+
+    void makeAssignment(Assignment a) {
+        int i = stateIndex.find(a.vname);
+        if (i == stateIndex.end()) {
+            throw std::invalid_argument("Assignment variable name not found in state index");
+        }
+        state[i].setAssign(a);
+    }
+
+    // debug methods
     void show() {
-        std::cout << "Number of Actions: " << nActions << std::endl;
-        std::cout << "Number of States: " << nStates << std::endl;
+        std::cout << "Number of Actions: " << getActionsSize() << std::endl;
+        std::cout << "Number of States: " << getStateSize() << std::endl;
         showDiscount();
         showStates();
         showActions();
@@ -82,44 +181,22 @@ public:
 
     void showStates() {
         std::cout << "State Space: " << std::endl;
-        print_map(state);
+        print_vector(state);
     }
 
     void showActions() {
         std::cout << "Action Space: " << std::endl;
-        print_map(actions);
+        print_vector(actions);
     }
 
     void showNonStateObs() {
         std::cout << "Non State Observations: " << std::endl;
-        print_map(nonStateObs);
+        print_vector(nonStateObs);
     }
 
     void showStateObs() {
         std::cout << "State Observations: " << std::endl;
         print_vector(stateObs);
-    }
-
-    std::vector<SVar> getStateVars() {
-        std::cout << "Getting states.." << std::endl;
-        std::vector<SVar> vars = get_map_values(state);
-        return vars;
-    }
-
-    std::vector<SAction> getActions() {
-        std::cout << "Getting actions.." << std::endl;
-        std::vector<SAction> acts = get_map_values(acts);
-        return acts;
-    }
-
-    std::vector<float> getActionProbs() {
-        std::cout << "Gettin action probs.." << std::endl;
-        std::vector<SAction> acts = getActions();
-        std::vector<float> probs;
-        for (auto const &a : acts) {
-            probs.push_back(a.probSuccess_);
-        }
-        return probs;
     }
     
 };

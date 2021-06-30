@@ -3,6 +3,7 @@
 #define _CYBER_UTILS_HPP_
 #include "oppt/plugin/PluginOptions.hpp"
 #include "ScenarioParser.hpp"
+#include "Scenario.hpp"
 
 namespace oppt
 {

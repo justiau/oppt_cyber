@@ -30,7 +30,6 @@ public:
         for (auto it = stateVars.begin(); it != stateVars.end(); ++it) {
             upperBound.push_back(it->valueCount - 1);
         }
-        // exit(1);
         return true;
     }
 
@@ -41,7 +40,6 @@ public:
             std::uniform_int_distribution<unsigned int> dist(lowerBound.at(i),upperBound.at(i));
             initStateVec.push_back(dist(*(randomGenerator.get())));
         }
-        // unsigned int stateDimension = robotEnvironment_->getRobot()->getStateSpace()->getNumDimensions();
         if (initStateVec.size() != nStates);
             ERROR("Init state size doesnt fit");
         RobotStateSharedPtr initState(new VectorState(initStateVec));

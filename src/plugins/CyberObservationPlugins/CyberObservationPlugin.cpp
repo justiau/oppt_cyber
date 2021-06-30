@@ -19,23 +19,35 @@ public :
     virtual bool load(const std::string& optionsFile) override {
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
-        // The observationError parameter acts as the efficiency distance here
+        scenario = generalOptions->getScenario();
+        nObs = scenario->getObsSize();
         observationError_ = generalOptions->observationError;
-        exit(1);
+        // exit(1);
         return true;
     }
 
     virtual ObservationResultSharedPtr getObservation(const ObservationRequest* observationRequest) const override {
         ObservationResultSharedPtr observationResult = std::make_shared<ObservationResult>();
-
-        // Get the observation
         VectorFloat stateVec = observationRequest->currentState->as<VectorState>()->asVector();
         VectorFloat actionVec = observationRequest->action->as<VectorAction>()->asVector();
-        VectorFloat observationVec(robotEnvironment_->getRobot()->getObservationSpace()->getNumDimensions(), 0.0);
-        
-        int actionVal = (unsigned int) actionVec[0] + 0.25;
-        
+        // -1.0 observation value represents a null observation
+        VectorFloat observationVec(nObs, -1.0);
 
+        scenario->setOpptState(stateVec);
+        scenario->setOpptObs(observationVec);
+        long binNumber = 0;
+
+        long actionVal = (unsigned int) actionVec[0] + 0.25;
+        SAction action = scenario->getAction(actionVal);
+        std::vector<Assignment> effects = (scenario->actionSuccess) ? action.onSuccess_.second : action.onFail_.second;
+        for (auto e : effects) {
+            scenario->assignObs(e);
+        }
+        // int obsId = 
+        // int obsValue = 
+
+        // only allows for one observation at a time
+        // binNumber = 
         auto observationSpace = robotEnvironment_->getRobot()->getObservationSpace();
         ObservationSharedPtr observation = std::make_shared<DiscreteVectorObservation>(observationVec);
         observation->as<DiscreteVectorObservation>()->setBinNumber(binNumber);
@@ -45,6 +57,8 @@ public :
     }
 
 private:
+    Scenario* scenario;
+    int nObs;
     FloatType observationError_;
 };
 

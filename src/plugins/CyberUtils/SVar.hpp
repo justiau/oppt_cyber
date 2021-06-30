@@ -6,19 +6,29 @@
 #include <iostream>
 #include <unordered_map>
 #include <stdexcept>
+#include <random>
+#include <chrono>
+
+enum VAR_TYPE {
+    STATE_TRANSITION,
+    STATE_OBSERVATION,
+    NONSTATE_OBSERVATION
+};
 
 struct Assignment {
-    std::string vname;
-    std::string value;
+    std::string vname_;
+    std::string value_;
+    VAR_TYPE type_;
 
-    Assignment(std::string name, std::string val) {
-        vname = name;
-        value = val;
+    Assignment(std::string vname, std::string value, VAR_TYPE type) {
+        vname_ = vname;
+        value_ = value;
+        type_ = type;
     }
 };
 
 std::ostream &operator<<(std::ostream &os, Assignment const &a) {
-    os << "{ " << a.vname << ": " << a.value << " }";
+    os << "{ " << a.vname_ << ": " << a.value_ << " }";
     return os;
 }
 
@@ -32,7 +42,6 @@ public:
         for (std::size_t i=0; i != values_.size(); ++i) {
             index_[values_[i]] = i;
         }
-        valueCount = values_.size();
     };
     
     virtual ~SVar() = default;
@@ -41,16 +50,13 @@ public:
 
     std::vector<std::string> values_;
 
-    int valueCount;
-
     std::unordered_map<std::string, int> index_;
+
+    VAR_TYPE type_ = VAR_TYPE::STATE_TRANSITION;
 
     float decay;
 
     bool fullyObs;
-
-    // current index
-    int cindex;
 
     std::string initValue;
 
@@ -60,26 +66,26 @@ public:
         return index_[val];
     }
 
-    bool hasValue(std::string val) {
-        return getIndex(val) == cindex;
+    int getRandIndex() {
+        unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator(seed1);
+        std::uniform_int_distribution<> distribution(0, values_.size() - 1);
+        return distribution(generator);
     }
 
-    Assignment generateAssignment(std::string val) {
+    int getValueCount() {
+        return values_.size();
+    }
+
+    void setType(VAR_TYPE type) {
+        type_ = type;
+    }
+
+    Assignment createAssignment(std::string val) {
         if (index_.find(val) != index_.end() || (val == "none" || val == "actual")) {
-            return Assignment(name_, val);
+            return Assignment(name_, val, type_);
         }
-        throw std::invalid_argument("Invalid value provided to generateAssignment");
-    }
-
-    void setAssign(Assignment a) {
-        if (a.vname == name_ && index_.find(a.value) != index_.end())
-            cindex = getIndex(a.value);
-    }
-
-    bool isAssign(Assignment a) {
-        if (a.vname == name_ && index_.find(a.value) != index_.end())
-            return cindex == getIndex(a.value);
-        return false;
+        throw std::invalid_argument("Invalid value provided to createAssignment");
     }
 
     friend std::ostream &operator<<(std::ostream &os, SVar const &v) {
@@ -87,6 +93,9 @@ public:
         print_vector(v.values_);
         return os;
     }
+
+private:
+    // STD
 
 };
 

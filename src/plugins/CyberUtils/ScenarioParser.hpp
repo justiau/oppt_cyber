@@ -66,26 +66,25 @@ public:
             // find fail node and add on fail state and observation changes
             YAML::Node failNode = ai->second["effects"]["failure"];
             vector<Assignment> onFailState =  extractAssignments(failNode["next_state"]);
-            vector<Assignment> onFailObs = extractAssignments(failNode["observation"]);
+            vector<Assignment> onFailObs = extractAssignments(failNode["observation"], true);
             action.setFailEffects(onFailState, onFailObs);
             // find success node and add on success state and observation changes
             YAML::Node successNode = ai->second["effects"]["success"];
             vector<Assignment> onSuccessState = extractAssignments(successNode["next_state"]);
-            vector<Assignment> onSuccessObs = extractAssignments(successNode["observation"]);
+            vector<Assignment> onSuccessObs = extractAssignments(successNode["observation"], true);
             action.setSuccessEffects(onSuccessState, onSuccessObs);
-            // scenario->actions.insert(std::make_pair(aname, action));
             scenario->addAction(action);
         }
         // scenario->nActions = actions.size();
     }
 
-    vector<Assignment> extractAssignments(YAML::Node node)  {
+    vector<Assignment> extractAssignments(YAML::Node node, bool isObsNode=false)  {
         vector<Assignment> assignments;
         for(YAML::const_iterator ci = node.begin(); ci != node.end(); ++ci) {
             string name = ci->first.as<string>();
             string val = ci->second.as<string>();
-            SVar var = scenario->getVar(name);
-            assignments.push_back(var.generateAssignment(val));
+            SVar var = (isObsNode) ? scenario->getStateVar(name) : scenario->getObsVar(name);
+            assignments.push_back(var.createAssignment(val));
         }
         return assignments;
     }
@@ -97,12 +96,10 @@ public:
             string oname = oi->first.as<string>();
             vector<string> values = oi->second.as<vector<string>>();
             SVar var(oname, values);
-            // scenario->nonStateObs.insert(std::make_pair(oname, var));
             scenario->addNonStateObs(var);
         }
         // state obs node
         YAML::Node sObs = root["observation_space"]["state_obs"];
-        // scenario->stateObs = sObs.as<vector<string>>();
         scenario->setStateObs(sObs.as<vector<string>>());
     }
 

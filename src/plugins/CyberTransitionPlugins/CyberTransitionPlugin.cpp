@@ -46,32 +46,29 @@ public:
         PropagationResultSharedPtr propagationResult(new PropagationResult());
         VectorFloat actionVec = propagationRequest->action->as<VectorAction>()->asVector();
         VectorFloat currentState = propagationRequest->currentState->as<VectorState>()->asVector();
-        VectorFloat resultingState(currentState);
+        // VectorFloat resultingState(currentState);
 
         unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed1);
         std::uniform_real_distribution<double> distribution(0,1);
 
+        // load oppt state into scenario
+        scenario->setOpptState(currentState);
+
         int actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
         FloatType p = action.probSuccess_;
         FloatType success = (FloatType) distribution(generator);
+        // action preconditions depend on currentState
         bool preconTrue = scenario->isPreconditionsTrue(action.preconditions_);
         if (preconTrue) {
             // on preconditions true
-            if (success < p) {
-                // on success
-                for (auto a : action.onSuccess_.first) {
-                    scenario->makeAssignment(a);
-                }
-            } else {
-                // on fail
-                for (auto a : action.onFail_.first) {
-                    scenario->makeAssignment(a);
-                }
+            std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;
+            for (auto e : effects) {
+                scenario->assignState(e);
             }
         }
-
+        VectorFloat resultingState = scenario->getOpptState();
         propagationResult->previousState = propagationRequest->currentState.get();
         propagationResult->nextState = std::make_shared<oppt::VectorState>(resultingState);
         return propagationResult;

@@ -2,8 +2,8 @@
 #include "oppt/opptCore/Distribution.hpp"
 #include "../CyberUtils/CyberUtils.hpp"
 #include "../CyberUtils/Scenario.hpp"
-#include "CyberActionSpaceDiscretizer.hpp"
 #include "../CyberUtils/SAction.hpp"
+#include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
 #include <random>
 #include <chrono>
@@ -46,7 +46,6 @@ public:
         PropagationResultSharedPtr propagationResult(new PropagationResult());
         VectorFloat actionVec = propagationRequest->action->as<VectorAction>()->asVector();
         VectorFloat currentState = propagationRequest->currentState->as<VectorState>()->asVector();
-        // VectorFloat resultingState(currentState);
 
         unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed1);
@@ -69,6 +68,8 @@ public:
             }
         }
         VectorFloat resultingState = scenario->getOpptState();
+        // set action success state to 1 or 0  depending on result to be used by reward and observation
+        resultingState.back() = (success < p) ? 1.0 : 0.0;
         propagationResult->previousState = propagationRequest->currentState.get();
         propagationResult->nextState = std::make_shared<oppt::VectorState>(resultingState);
         return propagationResult;

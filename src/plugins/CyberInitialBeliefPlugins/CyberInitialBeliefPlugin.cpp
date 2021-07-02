@@ -22,14 +22,18 @@ public:
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
-        nStates = scenario->getStatesize();
-        // lower bound all starts at 0
+        nStates = scenario->getStateSize();
+        // last state will represent action success
+        nStates += 1;
+        // lower bound all start at 0
         lowerBound.resize(nStates, 0);
         // upper bound is num of values zero indexed
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (auto it = stateVars.begin(); it != stateVars.end(); ++it) {
-            upperBound.push_back(it->valueCount - 1);
+            upperBound.push_back(it->getValueCount() - 1);
         }
+        // 0 for action failure 1 for action success
+        upperBound.push_back(1);
         return true;
     }
 
@@ -40,7 +44,7 @@ public:
             std::uniform_int_distribution<unsigned int> dist(lowerBound.at(i),upperBound.at(i));
             initStateVec.push_back(dist(*(randomGenerator.get())));
         }
-        if (initStateVec.size() != nStates);
+        if (initStateVec.size() != nStates)
             ERROR("Init state size doesnt fit");
         RobotStateSharedPtr initState(new VectorState(initStateVec));
         return initState;

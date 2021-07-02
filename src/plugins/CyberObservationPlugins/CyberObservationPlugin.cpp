@@ -22,7 +22,6 @@ public :
         scenario = generalOptions->getScenario();
         nObs = scenario->getObsSize();
         observationError_ = generalOptions->observationError;
-        // exit(1);
         return true;
     }
 
@@ -30,7 +29,8 @@ public :
         ObservationResultSharedPtr observationResult = std::make_shared<ObservationResult>();
         VectorFloat stateVec = observationRequest->currentState->as<VectorState>()->asVector();
         VectorFloat actionVec = observationRequest->action->as<VectorAction>()->asVector();
-        
+        // agent took action and landed in state - use to determine whether the action was succesful
+
         // -1.0 observation value represents a null observation
         VectorFloat observationVec(nObs, -1.0);
 
@@ -40,7 +40,8 @@ public :
 
         long actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
-        std::vector<Assignment> effects = (scenario->actionSuccess) ? action.onSuccess_.second : action.onFail_.second;
+        bool actionSuccess = stateVec.back();
+        std::vector<Assignment> effects = (actionSuccess) ? action.onSuccess_.second : action.onFail_.second;
         for (auto e : effects) {
             scenario->assignObs(e);
         }

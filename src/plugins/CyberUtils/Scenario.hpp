@@ -190,25 +190,25 @@ public:
     }
 
     // oppt methods
-    void setOpptState(std::vector<float> opptState) {
+    void setOpptState(std::vector<double> opptState) {
         // convert vector float to int type for discrete state
         std::vector<int> intVec(opptState.begin(), opptState.end());
         opptState_ = intVec;
     }
 
-    std::vector<float> getOpptState() {
-        std::vector<float> floatVec(opptState_.begin(), opptState_.end());
+    std::vector<double> getOpptState() {
+        std::vector<double> floatVec(opptState_.begin(), opptState_.end());
         return floatVec;
     }
 
-    void setOpptObs(std::vector<float> opptObs) {
+    void setOpptObs(std::vector<double> opptObs) {
         // convert vector float to int type for discrete state
         std::vector<int> intVec(opptObs.begin(), opptObs.end());
         opptObs_ = intVec;
     }
 
-    std::vector<float> getOpptObs() {
-        std::vector<float> floatVec(opptObs_.begin(), opptObs_.end());
+    std::vector<double> getOpptObs() {
+        std::vector<double> floatVec(opptObs_.begin(), opptObs_.end());
         return floatVec;
     }
 

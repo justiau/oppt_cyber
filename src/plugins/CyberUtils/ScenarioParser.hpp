@@ -8,8 +8,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
-
-using namespace std;
+#include <vector>
 
 class ScenarioParser {
 public:
@@ -24,7 +23,7 @@ public:
         parseStateSpace();
         parseObservationSpace();
         parseActionSpace();
-        // scenario->show();
+        scenario->show();
     }
 
     Scenario* get() {
@@ -42,48 +41,45 @@ public:
     void parseStateSpace() {
         YAML::Node state = root["state_space"];
         for(YAML::const_iterator si = state.begin(); si != state.end(); ++si) {
-            string vname = si->first.as<string>();
-            vector<string> values = si->second["values"].as<vector<string>>();
+            std::string vname = si->first.as<std::string>();
+            std::vector<std::string> values = si->second["values"].as<std::vector<std::string>>();
             SVar var(vname, values);
             var.decay = si->second["decay"].as<float>();
             var.fullyObs = si->second["fully_obs"].as<bool>();
-            var.initValue = si->second["initial_value"].as<string>();
-            // scenario->state.insert(std::make_pair(vname, var));
+            var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);
         }
-        // scenario->nStates = state.size();
     }
 
     void parseActionSpace() {
         YAML::Node actions = root["action_space"];
         for(YAML::const_iterator ai = actions.begin(); ai != actions.end(); ++ai) {
-            string aname = ai->first.as<string>();
+            std::string aname = ai->first.as<std::string>();
             float cost = ai->second["cost"].as<float>();
             float probSuccess = ai->second["prob_success"].as<float>();
             YAML::Node preNode = ai->second["preconditions"];
-            vector<Assignment> preconditions = extractAssignments(preNode);
+            std::vector<Assignment> preconditions = extractAssignments(preNode);
             SAction action(aname, cost, probSuccess, preconditions);
             // find fail node and add on fail state and observation changes
             YAML::Node failNode = ai->second["effects"]["failure"];
-            vector<Assignment> onFailState =  extractAssignments(failNode["next_state"]);
-            vector<Assignment> onFailObs = extractAssignments(failNode["observation"], true);
+            std::vector<Assignment> onFailState =  extractAssignments(failNode["next_state"]);
+            std::vector<Assignment> onFailObs = extractAssignments(failNode["observation"], true);
             action.setFailEffects(onFailState, onFailObs);
             // find success node and add on success state and observation changes
             YAML::Node successNode = ai->second["effects"]["success"];
-            vector<Assignment> onSuccessState = extractAssignments(successNode["next_state"]);
-            vector<Assignment> onSuccessObs = extractAssignments(successNode["observation"], true);
+            std::vector<Assignment> onSuccessState = extractAssignments(successNode["next_state"]);
+            std::vector<Assignment> onSuccessObs = extractAssignments(successNode["observation"], true);
             action.setSuccessEffects(onSuccessState, onSuccessObs);
             scenario->addAction(action);
         }
-        // scenario->nActions = actions.size();
     }
 
-    vector<Assignment> extractAssignments(YAML::Node node, bool isObsNode=false)  {
-        vector<Assignment> assignments;
+    std::vector<Assignment> extractAssignments(YAML::Node node, bool isObsNode=false)  {
+        std::vector<Assignment> assignments;
         for(YAML::const_iterator ci = node.begin(); ci != node.end(); ++ci) {
-            string name = ci->first.as<string>();
-            string val = ci->second.as<string>();
-            SVar var = (isObsNode) ? scenario->getStateVar(name) : scenario->getObsVar(name);
+            std::string name = ci->first.as<std::string>();
+            std::string val = ci->second.as<std::string>();
+            SVar var = (isObsNode) ? scenario->getObsVar(name) : scenario->getStateVar(name);
             assignments.push_back(var.createAssignment(val));
         }
         return assignments;
@@ -93,14 +89,14 @@ public:
         // non state obs node
         YAML::Node nsObs = root["observation_space"]["non_state_obs"];
         for(YAML::const_iterator oi = nsObs.begin(); oi != nsObs.end(); ++oi) {
-            string oname = oi->first.as<string>();
-            vector<string> values = oi->second.as<vector<string>>();
+            std::string oname = oi->first.as<std::string>();
+            std::vector<std::string> values = oi->second.as<std::vector<std::string>>();
             SVar var(oname, values);
             scenario->addNonStateObs(var);
         }
         // state obs node
         YAML::Node sObs = root["observation_space"]["state_obs"];
-        scenario->setStateObs(sObs.as<vector<string>>());
+        scenario->setStateObs(sObs.as<std::vector<std::string>>());
     }
 
 private:

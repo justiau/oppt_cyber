@@ -30,6 +30,7 @@ public :
         ObservationResultSharedPtr observationResult = std::make_shared<ObservationResult>();
         VectorFloat stateVec = observationRequest->currentState->as<VectorState>()->asVector();
         VectorFloat actionVec = observationRequest->action->as<VectorAction>()->asVector();
+        
         // -1.0 observation value represents a null observation
         VectorFloat observationVec(nObs, -1.0);
 
@@ -43,12 +44,11 @@ public :
         for (auto e : effects) {
             scenario->assignObs(e);
         }
-        // int obsId = 
-        // int obsValue = 
 
         // only allows for one observation at a time
-        // binNumber = 
-        auto observationSpace = robotEnvironment_->getRobot()->getObservationSpace();
+        binNumber = scenario->getBinNumber();
+        
+        observationVec = scenario->getOpptObs();
         ObservationSharedPtr observation = std::make_shared<DiscreteVectorObservation>(observationVec);
         observation->as<DiscreteVectorObservation>()->setBinNumber(binNumber);
         observationResult->observation = observation;

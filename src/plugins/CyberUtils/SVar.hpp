@@ -5,9 +5,12 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <stdexcept>
 #include <random>
 #include <chrono>
+
+std::unordered_set<std::string> STATEOBS_TYPES({"none", "actual", "noisy"});
 
 enum VAR_TYPE {
     STATE_TRANSITION,
@@ -82,7 +85,7 @@ public:
     }
 
     Assignment createAssignment(std::string val) {
-        if (index_.find(val) != index_.end() || (val == "none" || val == "actual")) {
+        if (index_.find(val) != index_.end() || STATEOBS_TYPES.find(val) != STATEOBS_TYPES.end()) {
             return Assignment(name_, val, type_);
         }
         throw std::invalid_argument("Invalid value provided to createAssignment");
@@ -93,9 +96,6 @@ public:
         print_vector(v.values_);
         return os;
     }
-
-private:
-    // STD
 
 };
 

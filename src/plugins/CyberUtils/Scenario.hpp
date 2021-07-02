@@ -43,8 +43,10 @@ private:
     // dynamic observation vector representing oppt observations
     std::vector<int> opptObs_;
 
+    long binNumber = 0;
+
 public:
-    bool actionSuccess;
+    // bool actionSuccess;
 
     // read methods
     float getDiscount() {
@@ -70,14 +72,14 @@ public:
         if (sit != stateObsIndex.end()) {
             return sit->second;
         } else if (oit != nonStateObsIndex.end()) {
-            return stateIndex.size() + oit->second;
+            return stateObs.size() + oit->second;
         } else {
-            throw std::invalid_argument("Obs variable name not found in state or observation variables");
+            throw std::invalid_argument("Obs variable name not found in observation variables");
         }
     }
 
     bool isStateObs(std::string oname) {
-        return getObsIndex(oname) < stateObs.size()
+        return getObsIndex(oname) < stateObs.size();
     }
 
     bool isStateObs(Assignment a) {
@@ -85,7 +87,7 @@ public:
     }
 
     SVar getObsVar(int obsIndex) {
-        return (obsIndex < stateObs.size()) ? stateObs[obsIndex] : nonStateObs[obsIndex];
+        return (obsIndex < stateObs.size()) ? stateObs[obsIndex] : nonStateObs[obsIndex - stateObs.size()];
     }
 
     SVar getObsVar(std::string vname) {
@@ -226,6 +228,20 @@ public:
         return true;
     }
 
+    long createBinNumber(int obsIndex, int obsValue) {
+        long n = 0;
+        for (std::size_t i=0; i < obsIndex; ++i) {
+            SVar obs = getObsVar(i);
+            n += obs.getValueCount();
+        }
+        n+=obsValue;
+        return n;
+    }
+
+    long getBinNumber() {
+        return binNumber;
+    }
+
     void assignState(Assignment a) {
         // apply assignment to loaded oppt state vector
         int si = getStateIndex(a.vname_);
@@ -242,14 +258,16 @@ public:
             if (a.value_ == "actual") {
                 int stateIndex = getStateIndex(a.vname_);
                 opptObs_[obsIndex] = opptState_[stateIndex];
+                binNumber = createBinNumber(obsIndex, opptState_[stateIndex]);
             } else if (a.value_ == "none") {
                 // set null observation
                 opptObs_[obsIndex] = -1;
             } else if (a.value_ == "noisy") {
-                // get probability of observation error
                 // noisy observation results in uniform observation across values
-                opptObs_[obsIndex] = obs.getRandIndex();
-            ] else {
+                int obsValue = obs.getRandIndex();
+                opptObs_[obsIndex] = obsValue;
+                binNumber = createBinNumber(obsIndex, obsValue);
+            } else {
                 throw std::invalid_argument("State observation value was not recognized");
             }
         } else if (a.type_ == VAR_TYPE::NONSTATE_OBSERVATION) {

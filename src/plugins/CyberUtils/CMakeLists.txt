@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+project(oppt_cyber_test)
+
 add_executable(ScenarioParser ScenarioParser.cpp)
 
 set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml tests")

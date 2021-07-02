@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
-#include <map>
 
 template<typename T>
 static void print_vector(const T& t) {
@@ -13,7 +12,7 @@ static void print_vector(const T& t) {
 }
 
 template<typename K, typename V>
-void print_map(std::map<K, V> const &m) {
+void print_map(std::unordered_map<K, V> const &m) {
     std::cout << "{" << std::endl;
     for (auto const &pair: m) {
         std::cout << pair.first << ": " << pair.second << "\n";

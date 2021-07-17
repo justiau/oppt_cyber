@@ -15,7 +15,6 @@ std::unordered_set<std::string> STATEOBS_TYPES({"none", "actual", "noisy"});
 enum VAR_TYPE {
     STATE_TRANSITION,
     STATE_OBSERVATION,
-    FOSTATE_OBSERVATION,
     NONSTATE_OBSERVATION
 };
 

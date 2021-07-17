@@ -48,10 +48,6 @@ public:
             var.fullyObs = si->second["fully_obs"].as<bool>();
             var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);
-            // if fully observable, create observation to track state variable
-            if (var.fullyObs) {
-                scenario->addFoStateObsVar(var);
-            }
         }
     }
 

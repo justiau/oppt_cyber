@@ -22,7 +22,7 @@ public :
         scenario = generalOptions->getScenario();
         auto observationSpace = robotEnvironment_->getRobot()->getObservationSpace();
         nObs = scenario->getObsSize();
-        scenario->updateMaxObsVal();
+        scenario->updateMaxObsSize();
         lowerBound_.resize(nObs, -1.0);
         for (auto var : scenario->getAllObs()) {
             upperBound_.push_back(var.getValueCount() - 1);
@@ -51,9 +51,7 @@ public :
         for (auto e : effects) {
             scenario->assignObs(e);
         }
-        scenario->updateFoObs();
         binNumber = scenario->getBinNumber();
-        // std::cout<<"Bin Number: "<<binNumber<<std::endl;
         observationVec = scenario->getOpptObs();
         ObservationSharedPtr observation = std::make_shared<DiscreteVectorObservation>(observationVec);
         observation->as<DiscreteVectorObservation>()->setBinNumber(binNumber);

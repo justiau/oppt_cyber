@@ -17,9 +17,6 @@ public:
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
-        // stepPenalty = generalOptions->stepPenalty;
-        // exitReward = generalOptions->exitReward;
-        // illegalMovePenalty = generalOptions->illegalMovePenalty;
         return true;
     }
 

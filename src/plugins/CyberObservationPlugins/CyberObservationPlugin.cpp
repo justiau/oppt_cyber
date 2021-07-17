@@ -20,7 +20,13 @@ public :
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
+        auto observationSpace = robotEnvironment_->getRobot()->getObservationSpace();
         nObs = scenario->getObsSize();
+        scenario->updateMaxObsVal();
+        lowerBound_.resize(nObs, -1.0);
+        for (auto var : scenario->getAllObs()) {
+            upperBound_.push_back(var.getValueCount() - 1);
+        }
         observationError_ = generalOptions->observationError;
         return true;
     }
@@ -45,10 +51,9 @@ public :
         for (auto e : effects) {
             scenario->assignObs(e);
         }
-
-        // only allows for one observation at a time
+        scenario->updateFoObs();
         binNumber = scenario->getBinNumber();
-        
+        // std::cout<<"Bin Number: "<<binNumber<<std::endl;
         observationVec = scenario->getOpptObs();
         ObservationSharedPtr observation = std::make_shared<DiscreteVectorObservation>(observationVec);
         observation->as<DiscreteVectorObservation>()->setBinNumber(binNumber);
@@ -60,6 +65,8 @@ public :
 private:
     Scenario* scenario;
     int nObs;
+    VectorFloat lowerBound_;
+    VectorFloat upperBound_;
     FloatType observationError_;
 };
 

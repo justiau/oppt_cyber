@@ -15,6 +15,7 @@ public:
     virtual bool load(const std::string& optionsFile) override {
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
+        scenario = generalOptions->getScenario();
         return true;
     }
 
@@ -30,11 +31,17 @@ public:
             return true;
         }
         VectorFloat stateVec = propagationResult->nextState->as<VectorState>()->asVector();
-        if (stateVec[0] == 3.0) {
-            return true;
+        scenario->setOpptState(stateVec);
+        for (auto t : scenario->getTerminals()) {
+            if (scenario->isAllAssignTrue(t.conditions_)) {
+                return true;
+            }
         }
         return false;
     }
+
+private:
+    Scenario* scenario;
     
 };
 

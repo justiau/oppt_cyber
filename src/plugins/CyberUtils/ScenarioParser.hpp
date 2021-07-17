@@ -23,7 +23,7 @@ public:
         parseStateSpace();
         parseObservationSpace();
         parseActionSpace();
-        scenario->show();
+        parseTerminalStates();
     }
 
     Scenario* get() {
@@ -48,6 +48,10 @@ public:
             var.fullyObs = si->second["fully_obs"].as<bool>();
             var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);
+            // if fully observable, create observation to track state variable
+            if (var.fullyObs) {
+                scenario->addFoStateObsVar(var);
+            }
         }
     }
 
@@ -62,7 +66,7 @@ public:
             SAction action(aname, cost, probSuccess, preconditions);
             // find fail node and add on fail state and observation changes
             YAML::Node failNode = ai->second["effects"]["failure"];
-            std::vector<Assignment> onFailState =  extractAssignments(failNode["next_state"]);
+            std::vector<Assignment> onFailState = extractAssignments(failNode["next_state"]);
             std::vector<Assignment> onFailObs = extractAssignments(failNode["observation"], true);
             action.setFailEffects(onFailState, onFailObs);
             // find success node and add on success state and observation changes
@@ -97,6 +101,17 @@ public:
         // state obs node
         YAML::Node sObs = root["observation_space"]["state_obs"];
         scenario->setStateObs(sObs.as<std::vector<std::string>>());
+    }
+
+    void parseTerminalStates() {
+        YAML::Node terminal = root["terminal_states"];
+        for (YAML::const_iterator ti = terminal.begin(); ti != terminal.end(); ++ti) {
+            std::string tname = ti->first.as<std::string>();
+            float reward = ti->second["reward"].as<float>();
+            std::vector<Assignment> conditions = extractAssignments(ti->second["state"]);
+            Terminal terminal(tname, conditions, reward);
+            scenario->addTerminal(terminal);
+        }
     }
 
 private:

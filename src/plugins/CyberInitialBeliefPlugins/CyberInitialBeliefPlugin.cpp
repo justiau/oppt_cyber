@@ -4,7 +4,6 @@
 #include "oppt/plugin/Plugin.hpp"
 #include "../CyberUtils/CyberUtils.hpp"
 #include "../CyberUtils/Scenario.hpp"
-
 #include <stdlib.h>
 
 namespace oppt
@@ -25,25 +24,24 @@ public:
         nStates = scenario->getStateSize();
         // last state will represent action success
         nStates += 1;
-        // lower bound all start at 0
-        lowerBound.resize(nStates, 0);
-        // upper bound is num of values zero indexed
-        std::vector<SVar> stateVars = scenario->getStateVars();
-        for (auto it = stateVars.begin(); it != stateVars.end(); ++it) {
-            upperBound.push_back(it->getValueCount() - 1);
-        }
-        // 0 for action failure 1 for action success
-        upperBound.push_back(1);
         return true;
     }
 
     virtual RobotStateSharedPtr sampleAnInitState() override {
         VectorFloat initStateVec;
         auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
-        for(int i=0; i < nStates; i++) {
-            std::uniform_int_distribution<unsigned int> dist(lowerBound.at(i),upperBound.at(i));
-            initStateVec.push_back(dist(*(randomGenerator.get())));
+        for(int i=0; i < nStates - 1; i++) {
+            SVar var = scenario->getStateVar(i);
+            if (var.initValue == "uniform") {
+                std::uniform_int_distribution<> d(0, var.getValueCount() - 1);
+                auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
+                initStateVec.push_back(d(*(randomGenerator.get())));
+            } else {
+                initStateVec.push_back(var.getIndex(var.initValue));
+            }
         }
+        // last state indicates action success
+        initStateVec.push_back(0);
         if (initStateVec.size() != nStates)
             ERROR("Init state size doesnt fit");
         RobotStateSharedPtr initState(new VectorState(initStateVec));
@@ -53,8 +51,6 @@ public:
 private:
     Scenario* scenario;
     int nStates;
-    VectorFloat lowerBound;
-    VectorFloat upperBound;
 };
 
 OPPT_REGISTER_INITIAL_BELIEF_PLUGIN(CyberInitialBeliefPlugin)

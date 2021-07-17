@@ -15,6 +15,7 @@ std::unordered_set<std::string> STATEOBS_TYPES({"none", "actual", "noisy"});
 enum VAR_TYPE {
     STATE_TRANSITION,
     STATE_OBSERVATION,
+    FOSTATE_OBSERVATION,
     NONSTATE_OBSERVATION
 };
 
@@ -32,6 +33,28 @@ struct Assignment {
 
 std::ostream &operator<<(std::ostream &os, Assignment const &a) {
     os << "{ " << a.vname_ << ": " << a.value_ << " }";
+    return os;
+}
+
+struct Terminal {
+    std::string tname_;
+    std::vector<Assignment> conditions_;
+    float reward_;
+
+    Terminal(std::string tname, std::vector<Assignment> conditions, float reward) :
+        tname_(tname),
+        conditions_(conditions),
+        reward_(reward) {
+    }
+};
+
+std::ostream &operator<<(std::ostream &os, Terminal const &t) {
+    os << "{ " << t.tname_ << ": " << t.reward_ << " } ";
+    os << "{ " << std::endl;
+    for (auto c : t.conditions_) {
+        os << c << " ";
+    }
+    os << "}" << std::endl;
     return os;
 }
 
@@ -59,7 +82,7 @@ public:
 
     float decay;
 
-    bool fullyObs;
+    bool fullyObs = false;
 
     std::string initValue;
 
@@ -73,7 +96,8 @@ public:
         unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed1);
         std::uniform_int_distribution<> distribution(0, values_.size() - 1);
-        return distribution(generator);
+        int d = distribution(generator);
+        return d;
     }
 
     int getValueCount() {
@@ -96,7 +120,6 @@ public:
         print_vector(v.values_);
         return os;
     }
-
 };
 
 #endif

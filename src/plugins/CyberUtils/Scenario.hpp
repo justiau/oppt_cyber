@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <utility>
+#include <bits/stdc++.h>
 
 class Scenario {
 public:
@@ -20,6 +21,9 @@ public:
 private:
     // static discount
     float discount;
+
+    // zero-indexed max observation value count including null observation
+    int maxObsVal;
 
     // static list of variables
     std::vector<SVar> state;
@@ -37,17 +41,20 @@ private:
     std::vector<SVar> stateObs;
     std::unordered_map<std::string, int> stateObsIndex;
 
+    // observations to track fully observable states
+    std::vector<SVar> foStateObs;
+    std::unordered_map<std::string, int> foStateObsIndex;
+
+    // terminal states
+    std::vector<Terminal> terminals;
+
     // dynamic state vector representing oppt state
     std::vector<int> opptState_;
 
     // dynamic observation vector representing oppt observations
     std::vector<int> opptObs_;
 
-    long binNumber = 0;
-
 public:
-    // bool actionSuccess;
-
     // read methods
     float getDiscount() {
         return discount;
@@ -57,25 +64,13 @@ public:
         return state.size();
     }
 
-    int getStateIndex(std::string vname) {
-        return stateIndex.find(vname)->second;
+    SVar getStateVar(int stateIndex) {
+        return state[stateIndex];
     }
 
     SVar getStateVar(std::string vname) {
         int si = getStateIndex(vname);
         return state[si];
-    }
-
-    int getObsIndex(std::string oname) {
-        auto sit = stateObsIndex.find(oname);
-        auto oit = nonStateObsIndex.find(oname);
-        if (sit != stateObsIndex.end()) {
-            return sit->second;
-        } else if (oit != nonStateObsIndex.end()) {
-            return stateObs.size() + oit->second;
-        } else {
-            throw std::invalid_argument("Obs variable name not found in observation variables");
-        }
     }
 
     bool isStateObs(std::string oname) {
@@ -87,7 +82,14 @@ public:
     }
 
     SVar getObsVar(int obsIndex) {
-        return (obsIndex < stateObs.size()) ? stateObs[obsIndex] : nonStateObs[obsIndex - stateObs.size()];
+        if (obsIndex < stateObs.size()) {
+            return stateObs[obsIndex];
+        } else if (obsIndex < (stateObs.size() + foStateObs.size())) {
+            return foStateObs[obsIndex - stateObs.size()];
+        } else {
+            int offset = stateObs.size() + foStateObs.size();
+            return nonStateObs[obsIndex - offset];
+        }
     }
 
     SVar getObsVar(std::string vname) {
@@ -108,10 +110,6 @@ public:
 
     std::vector<SVar> getStateVars() {
         return state;
-    }
-
-    int getActionIndex(std::string aname) {
-        return actionIndex.find(aname)->second;
     }
 
     SAction getAction(int aIndex) {
@@ -136,13 +134,18 @@ public:
 
     std::vector<SVar> getAllObs() {
         std::vector<SVar> obs = stateObs;
+        obs.insert(obs.end(), foStateObs.begin(), foStateObs.end());
         obs.insert(obs.end(), nonStateObs.begin(), nonStateObs.end());
         return obs;
     }
 
     int getObsSize() {
-        // state observations come before non state observations in obs vector
-        return stateObs.size() + nonStateObs.size();
+        // obs ordering: STATE OBS, FULLY OBS STATE OBS, NON STATE OBS
+        return stateObs.size() + foStateObs.size() + nonStateObs.size();
+    }
+
+    std::vector<Terminal> getTerminals() {
+        return terminals;
     }
 
     // write methods for parsing
@@ -154,6 +157,7 @@ public:
         if (stateIndex.find(var.name_) != stateIndex.end()) {
             throw std::invalid_argument("Variable name to add already exists in state variables");
         }
+        // add var to index and map of state vars
         stateIndex.insert(std::make_pair(var.name_, state.size()));
         state.push_back(var);
     }
@@ -166,13 +170,8 @@ public:
         actions.push_back(a);
     }
 
-    void addNonStateObs(SVar var) {
-        if (nonStateObsIndex.find(var.name_) != nonStateObsIndex.end()) {
-            throw std::invalid_argument("Observation name to add already exists in non state observation variables");
-        }
-        var.setType(VAR_TYPE::NONSTATE_OBSERVATION);
-        nonStateObsIndex.insert(std::make_pair(var.name_, nonStateObs.size()));
-        nonStateObs.push_back(var);
+    void addTerminal(Terminal t) {
+        terminals.push_back(t);
     }
 
     void setStateObs(std::vector<std::string> onames) {
@@ -189,7 +188,26 @@ public:
         stateObsIndex = obsIndexMap;
     }
 
+    void addFoStateObsVar(SVar var) {
+        if (foStateObsIndex.find(var.name_) != foStateObsIndex.end()) {
+            throw std::invalid_argument("Observation name to add already exists in fully observable state observation variables");
+        }
+        var.setType(VAR_TYPE::FOSTATE_OBSERVATION);
+        foStateObsIndex.insert(std::make_pair(var.name_, foStateObs.size()));
+        foStateObs.push_back(var);
+    }
+
+    void addNonStateObs(SVar var) {
+        if (nonStateObsIndex.find(var.name_) != nonStateObsIndex.end()) {
+            throw std::invalid_argument("Observation name to add already exists in non state observation variables");
+        }
+        var.setType(VAR_TYPE::NONSTATE_OBSERVATION);
+        nonStateObsIndex.insert(std::make_pair(var.name_, nonStateObs.size()));
+        nonStateObs.push_back(var);
+    }
+
     // oppt methods
+    
     void setOpptState(std::vector<double> opptState) {
         // convert vector float to int type for discrete state
         std::vector<int> intVec(opptState.begin(), opptState.end());
@@ -218,9 +236,9 @@ public:
         return opptState_[si] == vi;
     }
 
-    bool isPreconditionsTrue(std::vector<Assignment> preconditions) {
-        for (auto pre : preconditions) {
-            if (!isAssignTrue(pre)) {
+    bool isAllAssignTrue(std::vector<Assignment> assigns) {
+        for (auto a : assigns) {
+            if (!isAssignTrue(a)) {
                 // return false on first fail
                 return false;
             }
@@ -228,17 +246,24 @@ public:
         return true;
     }
 
-    long createBinNumber(int obsIndex, int obsValue) {
-        long n = 0;
-        for (std::size_t i=0; i < obsIndex; ++i) {
-            SVar obs = getObsVar(i);
-            n += obs.getValueCount();
+    void updateMaxObsVal() {
+        int maxCount = 0;
+        for (auto var : getAllObs()) {
+            int count = var.getValueCount();
+            if (count > maxCount) maxCount = count;
         }
-        n+=obsValue;
-        return n;
+        maxObsVal = maxCount;
     }
 
     long getBinNumber() {
+        long binNumber = 0;
+        for (int i = 0; i < opptObs_.size(); ++i) {
+            // 0-index observation value
+            int obsVal = opptObs_[i] + 1;
+            SVar obs = getObsVar(i);
+            int valCount = obs.getValueCount() + 1;
+            binNumber += obsVal * (i * valCount);
+        }
         return binNumber;
     }
 
@@ -258,7 +283,6 @@ public:
             if (a.value_ == "actual") {
                 int stateIndex = getStateIndex(a.vname_);
                 opptObs_[obsIndex] = opptState_[stateIndex];
-                binNumber = createBinNumber(obsIndex, opptState_[stateIndex]);
             } else if (a.value_ == "none") {
                 // set null observation
                 opptObs_[obsIndex] = -1;
@@ -266,15 +290,23 @@ public:
                 // noisy observation results in uniform observation across values
                 int obsValue = obs.getRandIndex();
                 opptObs_[obsIndex] = obsValue;
-                binNumber = createBinNumber(obsIndex, obsValue);
             } else {
                 throw std::invalid_argument("State observation value was not recognized");
             }
         } else if (a.type_ == VAR_TYPE::NONSTATE_OBSERVATION) {
             // non state observation
-            opptObs_[obsIndex] = obs.getIndex(a.value_);
+            int obsValue = obs.getIndex(a.value_);
+            opptObs_[obsIndex] = obsValue;
         } else {
             throw std::invalid_argument("Assignment type was not an observation but passed to assignObs function");
+        }
+    }
+
+    void updateFoObs() {
+        for (auto var : foStateObs) {
+            int obsIndex = getObsIndex(var.name_);
+            int stateIndex = getStateIndex(var.name_);
+            opptObs_[obsIndex] = opptState_[stateIndex];
         }
     }
 
@@ -285,8 +317,9 @@ public:
         showDiscount();
         showStates();
         showActions();
-        showNonStateObs();
         showStateObs();
+        showFoStateObs();
+        showNonStateObs();
     }
 
     void showDiscount() {
@@ -311,6 +344,35 @@ public:
     void showStateObs() {
         std::cout << "State Observations: " << std::endl;
         print_vector(stateObs);
+    }
+
+    void showFoStateObs() {
+        std::cout << "Fully Observable State Observations: " << std::endl;
+        print_vector(foStateObs);
+    }
+
+private:
+    int getStateIndex(std::string vname) {
+        return stateIndex.find(vname)->second;
+    }
+
+    int getObsIndex(std::string oname) {
+        auto sit = stateObsIndex.find(oname);
+        auto nit = nonStateObsIndex.find(oname);
+        auto fit = foStateObsIndex.find(oname);
+        if (sit != stateObsIndex.end()) {
+            return sit->second;
+        } else if (fit != foStateObsIndex.end()) {
+            return stateObs.size() + fit->second;
+        } else if (nit != nonStateObsIndex.end()) {
+            return stateObs.size() + foStateObs.size() + nit->second;
+        } else {
+            throw std::invalid_argument("Obs variable name not found in observation variables");
+        }
+    }
+
+    int getActionIndex(std::string aname) {
+        return actionIndex.find(aname)->second;
     }
     
 };

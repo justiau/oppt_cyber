@@ -5,8 +5,6 @@
 #include "../CyberUtils/SAction.hpp"
 #include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
-#include <random>
-#include <chrono>
 
 namespace oppt
 {
@@ -46,10 +44,8 @@ public:
         PropagationResultSharedPtr propagationResult(new PropagationResult());
         VectorFloat actionVec = propagationRequest->action->as<VectorAction>()->asVector();
         VectorFloat currentState = propagationRequest->currentState->as<VectorState>()->asVector();
-
-        unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-        std::default_random_engine generator(seed1);
-        std::uniform_real_distribution<double> distribution(0,1);
+        std::uniform_real_distribution<double> d(0,1);
+        auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
 
         // load oppt state into scenario
         scenario->setOpptState(currentState);
@@ -57,9 +53,9 @@ public:
         int actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
         FloatType p = action.probSuccess_;
-        FloatType success = (FloatType) distribution(generator);
+        FloatType success = (FloatType) d(*(randomGenerator.get()));
         // action preconditions depend on currentState
-        bool preconTrue = scenario->isPreconditionsTrue(action.preconditions_);
+        bool preconTrue = scenario->isAllAssignTrue(action.preconditions_);
         if (preconTrue) {
             // on preconditions true
             std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;

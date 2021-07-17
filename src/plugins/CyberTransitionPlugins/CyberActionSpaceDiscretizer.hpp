@@ -2,7 +2,6 @@
 #define _CYBER_ACTION_SPACE_DISCRETE_HPP_
 
 #include "oppt/robotHeaders/ActionSpaceDiscretizer.hpp"
-#include "../CyberUtils/CyberUtils.hpp"
 
 namespace oppt {
 
@@ -10,7 +9,7 @@ class CyberActionSpaceDiscretizer : public ActionSpaceDiscretizer {
 public:
     CyberActionSpaceDiscretizer(ActionSpaceSharedPtr &actionSpace):
         ActionSpaceDiscretizer(actionSpace) {
-            LOGGING("Custom Control Host Action Space Discretizer");
+            LOGGING("Custom Cyber Action Space Discretizer");
     }
 
     virtual ~CyberActionSpaceDiscretizer(){}
@@ -19,7 +18,7 @@ public:
         std::vector<ActionSharedPtr> allActionsOrdered_;
         long code = 0;
         for (int i=firstActionIndex_; i<= lastActionIndex_; ++i) {
-            VectorFloat actionVec{i};
+            VectorFloat actionVec{static_cast<double>(i)};
             ActionSharedPtr action(new DiscreteVectorAction(actionVec));
             action->as<DiscreteVectorAction>()->setBinNumber(code);
             code++;

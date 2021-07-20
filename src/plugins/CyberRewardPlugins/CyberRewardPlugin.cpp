@@ -16,6 +16,8 @@ public:
     virtual bool load(const std::string& optionsFile) override {
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
+        minReward = generalOptions->minReward;
+        maxReward = generalOptions->maxReward;
         scenario = generalOptions->getScenario();
         return true;
     }
@@ -37,33 +39,13 @@ public:
     }
 
     virtual std::pair<FloatType, FloatType> getMinMaxReward() const override {
-        // greedy min max
-        std::vector<SAction> actions = scenario->getActions();
-        std::vector<Terminal> terminals = scenario->getTerminals();
-        float minActionReward = actions[0].cost_;
-        float maxActionReward = actions[0].cost_;
-        float minTerminalReward = terminals[0].reward_;
-        float maxTerminalReward = terminals[0].reward_;
-        // min and max action cost
-        for (auto a : actions) {
-            // convert cost to reward
-            float reward = -1 * a.cost_;
-            if (reward < minActionReward) minActionReward = reward;
-            if (reward > maxActionReward) maxActionReward = reward;
-        }
-        // min and max terminal reward
-        for (auto t : terminals) {
-            if (t.reward_ < minTerminalReward) minTerminalReward = t.reward_;
-            if (t.reward_ > maxTerminalReward) maxTerminalReward = t.reward_;
-        }
-        return std::make_pair(minActionReward + minTerminalReward, maxActionReward + maxTerminalReward);
+        return std::make_pair(minReward, maxReward);
     }
 
 private:
     Scenario* scenario;
-    FloatType stepPenalty;
-    FloatType exitReward;
-    FloatType illegalMovePenalty;
+    FloatType minReward;
+    FloatType maxReward;
 };
 
 OPPT_REGISTER_REWARD_PLUGIN(CyberRewardPlugin)

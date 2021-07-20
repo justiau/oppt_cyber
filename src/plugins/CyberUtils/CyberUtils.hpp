@@ -18,17 +18,9 @@ public:
     // path to the cyber scenario file
     std::string scenarioPath;
 
-    // upperbound and lowerbound for initial belief values
-    VectorFloat upperBound;
-    VectorFloat lowerBound;
+    float minReward;
 
-    // observation error
-    FloatType observationError;
-
-    // reward options
-    FloatType stepPenalty;
-    FloatType exitReward;
-    FloatType illegalMovePenalty;
+    float maxReward;
 
     static std::unique_ptr<options::OptionParser> makeParser() {
         std::unique_ptr<options::OptionParser> parser =
@@ -43,35 +35,13 @@ public:
                                         "scenarioPath",
                                         &CyberOptions::scenarioPath);
 
-        /*** Initial belief options ***/
+        parser->addOption<float>("cyberScenarioOptions",
+                                        "minReward",
+                                        &CyberOptions::minReward);
 
-        // Lower starting bound
-        parser->addOption<VectorFloat>("initialBeliefOptions",
-                                       "lowerBound",
-                                       &CyberOptions::lowerBound);
-        // Upper starting bound
-	    parser->addOption<VectorFloat>("initialBeliefOptions",
-                                       "upperBound",
-                                       &CyberOptions::upperBound);
-
-        /*** Observation options ***/
-        parser->addOption<FloatType>("observationPluginOptions",
-                                     "observationError",
-                                     &CyberOptions::observationError);
-
-        /*** Reward Plugin options ***/
-        parser->addOption<FloatType>("rewardPluginOptions",
-                                         "stepPenalty",
-                                         &CyberOptions::stepPenalty);
-
-        parser->addOption<FloatType>("rewardPluginOptions",
-                                         "exitReward",
-                                         &CyberOptions::exitReward);
-
-        parser->addOption<FloatType>("rewardPluginOptions",
-                                         "illegalMovePenalty",
-                                         &CyberOptions::illegalMovePenalty);
-
+        parser->addOption<float>("cyberScenarioOptions",
+                                        "maxReward",
+                                        &CyberOptions::maxReward);
     }
 
     Scenario* getScenario() {

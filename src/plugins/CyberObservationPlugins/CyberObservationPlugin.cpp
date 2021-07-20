@@ -27,7 +27,6 @@ public :
         for (auto var : scenario->getAllObs()) {
             upperBound_.push_back(var.getValueCount() - 1);
         }
-        observationError_ = generalOptions->observationError;
         return true;
     }
 
@@ -65,7 +64,6 @@ private:
     int nObs;
     VectorFloat lowerBound_;
     VectorFloat upperBound_;
-    FloatType observationError_;
 };
 
 OPPT_REGISTER_OBSERVATION_PLUGIN(CyberObservationPlugin)

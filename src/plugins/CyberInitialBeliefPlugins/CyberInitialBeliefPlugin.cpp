@@ -34,7 +34,6 @@ public:
             SVar var = scenario->getStateVar(i);
             if (var.initValue == "uniform") {
                 std::uniform_int_distribution<> d(0, var.getValueCount() - 1);
-                auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
                 initStateVec.push_back(d(*(randomGenerator.get())));
             } else {
                 initStateVec.push_back(var.getIndex(var.initValue));

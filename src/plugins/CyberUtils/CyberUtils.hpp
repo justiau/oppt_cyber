@@ -18,6 +18,8 @@ public:
     // path to the cyber scenario file
     std::string scenarioPath;
 
+    std::string defenderPath;
+
     float minReward;
 
     float maxReward;
@@ -35,6 +37,11 @@ public:
                                         "scenarioPath",
                                         &CyberOptions::scenarioPath);
 
+        parser->addOptionWithDefault<std::string>("cyberScenarioOptions",
+                                        "defenderPath",
+                                        &CyberOptions::defenderPath,
+                                        "");
+
         parser->addOption<float>("cyberScenarioOptions",
                                         "minReward",
                                         &CyberOptions::minReward);
@@ -49,6 +56,18 @@ public:
             ERROR("getScenario called before path was set.");
         ScenarioParser scenarioParser;
         scenarioParser.parse(scenarioPath);
+        return scenarioParser.get();
+    }
+
+    Scenario* getDefender() {
+        if (defenderPath.empty()) {
+            ERROR("getDefender called before path was set.");
+        }
+        if (defenderPath == "") {
+            ERROR("Defender was not set in the configuation file.")
+        }
+        ScenarioParser scenarioParser;
+        scenarioParser.parse(defenderPath);
         return scenarioParser.get();
     }
 

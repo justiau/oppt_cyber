@@ -5,6 +5,7 @@
 #include "../CyberUtils/SAction.hpp"
 #include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
+#include <unordered_set>
 
 namespace oppt
 {
@@ -44,7 +45,7 @@ public:
         PropagationResultSharedPtr propagationResult(new PropagationResult());
         VectorFloat actionVec = propagationRequest->action->as<VectorAction>()->asVector();
         VectorFloat currentState = propagationRequest->currentState->as<VectorState>()->asVector();
-        std::uniform_real_distribution<double> d(0,1);
+        std::uniform_real_distribution<double> successDist(0,1);
         auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
 
         // load oppt state into scenario
@@ -53,7 +54,8 @@ public:
         int actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
         FloatType p = action.probSuccess_;
-        FloatType success = (FloatType) d(*(randomGenerator.get()));
+        FloatType success = (FloatType) successDist(*(randomGenerator.get()));
+
         // action preconditions depend on currentState
         bool preconTrue = scenario->isAllAssignTrue(action.preconditions_);
         if (preconTrue) {
@@ -63,6 +65,31 @@ public:
                 scenario->assignState(e);
             }
         }
+        
+        // simulate defender behaviour with information decay
+        FloatType decaySuccess;
+        std::unordered_set<std::string> affectedSet = action.getAffectedSet();
+        std::vector<SVar> stateVars = scenario->getStateVars();
+        for (size_t i=0; i<stateVars.size(); ++i) {
+            SVar var = stateVars[i];
+            if (var.decay > 0) {
+                if (affectedSet.find(var.name_) == affectedSet.end()) {
+                    decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
+                    if (decaySuccess < var.decay) {
+                        int opptVal = scenario->getOpptVal(i);
+                        std::vector<std::string> values = var.getValues();
+                        // erase existing value
+                        values.erase(values.begin() + opptVal);
+                        std::uniform_int_distribution<> decayStateDist(0,values.size() - 1);
+                        // make decay assignment
+                        int decayStateVal = decayStateDist(*(randomGenerator.get()));
+                        Assignment decayChange = var.createAssignment(values[decayStateVal]);
+                        scenario->assignState(decayChange);
+                    }
+                }
+            }
+        }
+
         VectorFloat resultingState = scenario->getOpptState();
         // set action success state to 1 or 0  depending on result to be used by reward and observation
         resultingState.back() = (success < p) ? 1.0 : 0.0;

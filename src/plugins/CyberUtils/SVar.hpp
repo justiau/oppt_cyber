@@ -103,6 +103,10 @@ public:
         return values_.size();
     }
 
+    std::vector<std::string> getValues() {
+        return values_;
+    }
+
     void setType(VAR_TYPE type) {
         type_ = type;
     }

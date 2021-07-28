@@ -245,6 +245,15 @@ public:
         return binNumber;
     }
 
+    int getOpptVal(std::string vname) {
+        auto si = stateIndex.find(vname);
+        return opptState_[si->second];
+    }
+
+    int getOpptVal(int index) {
+        return opptState_[index];
+    }
+
     void assignState(Assignment a) {
         // apply assignment to loaded oppt state vector
         int si = getStateIndex(a.vname_);

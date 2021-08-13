@@ -10,14 +10,14 @@
 
 namespace oppt
 {
-class CyberTransitionPlanningPlugin: public TransitionPlugin
+class CyberTransitionDecayExecutionPlugin: public TransitionPlugin
 {
 public:
-    CyberTransitionPlanningPlugin():
+    CyberTransitionDecayExecutionPlugin():
         TransitionPlugin() {
     }
 
-    virtual ~CyberTransitionPlanningPlugin() = default;
+    virtual ~CyberTransitionDecayExecutionPlugin() = default;
 
     virtual bool load(const std::string& optionsFile) override {
         // overwrite action space with custom action space discretizer
@@ -39,6 +39,7 @@ public:
         std::shared_ptr<ActionSpaceDiscretizer> cyberActionSpaceDiscretizerShared =
             std::make_shared<CyberActionSpaceDiscretizer>(cyberActionSpaceDiscretizer);
         actionSpace->setActionSpaceDiscretizer(cyberActionSpaceDiscretizerShared);
+
         return true;
     }
 
@@ -73,10 +74,10 @@ public:
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
-            if (var.decay > 0) {
+            if (var.execution_decay > 0) {
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
-                    if (decaySuccess < var.decay) {
+                    if (decaySuccess < var.execution_decay) {
                         int opptVal = scenario->getOpptVal(i);
                         std::vector<std::string> values = var.getValues();
                         // erase existing value
@@ -103,6 +104,6 @@ private:
     Scenario* scenario;
 };
 
-OPPT_REGISTER_TRANSITION_PLUGIN(CyberTransitionPlanningPlugin)
+OPPT_REGISTER_TRANSITION_PLUGIN(CyberTransitionDecayExecutionPlugin)
 
 }

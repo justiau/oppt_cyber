@@ -81,6 +81,8 @@ public:
 
     float decay;
 
+    float execution_decay;
+
     bool fullyObs = false;
 
     std::string initValue;

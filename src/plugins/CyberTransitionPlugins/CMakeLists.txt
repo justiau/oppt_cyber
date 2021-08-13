@@ -6,3 +6,6 @@ target_include_directories(CyberTransitionPlanningPlugin PRIVATE ${PROJECT_SOURC
 
 ADD_TRANSITION_PLUGIN(CyberTransitionExecutionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionExecutionPlugin.cpp)
 target_include_directories(CyberTransitionExecutionPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+
+ADD_TRANSITION_PLUGIN(CyberTransitionDecayExecutionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionDecayExecutionPlugin.cpp)
+target_include_directories(CyberTransitionDecayExecutionPlugin PRIVATE ${PROJECT_SOURCE_DIR})

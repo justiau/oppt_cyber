@@ -45,7 +45,8 @@ public:
             std::vector<std::string> values = si->second["values"].as<std::vector<std::string>>();
             SVar var(vname, values);
             var.decay = si->second["decay"].as<float>();
-            var.execution_decay = si->second["decay"].as<float>();
+            if (YAML::Node decay_execute = si->second["decay_execute"])
+                var.execution_decay = decay_execute.as<float>();
             var.fullyObs = si->second["fully_obs"].as<bool>();
             var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);

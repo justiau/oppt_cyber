@@ -8,6 +8,9 @@
 #include <unordered_set>
 #include <iostream>
 
+using std::cout;
+using std::endl;
+
 namespace oppt
 {
 class CyberTransitionDecayExecutionPlugin: public TransitionPlugin

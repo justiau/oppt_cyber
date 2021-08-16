@@ -7,7 +7,7 @@
 using namespace std;
 
 int main() {
-    std::string scenarioPath = "/home/justin/dev/oppt_cyber/scenarios/exp_1/es1_red_d.yaml";
+    std::string scenarioPath = "/home/justin/dev/oppt_cyber/scenarios/exp_2/es2_red_d.yaml";
     ScenarioParser scenarioParser;
     scenarioParser.parse(scenarioPath);
     Scenario *scenario = scenarioParser.get();

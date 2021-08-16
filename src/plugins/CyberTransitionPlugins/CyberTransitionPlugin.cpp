@@ -55,7 +55,7 @@ public:
         FloatType p = action.probSuccess_;
         FloatType success = (FloatType) d(*(randomGenerator.get()));
         // action preconditions depend on currentState
-        bool preconTrue = scenario->isAllAssignTrue(action.preconditions_);
+        bool preconTrue = scenario->checkPreconditions(action);
         if (preconTrue) {
             // on preconditions true
             std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;

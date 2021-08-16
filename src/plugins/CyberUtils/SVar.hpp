@@ -22,11 +22,13 @@ struct Assignment {
     std::string vname_;
     std::string value_;
     VAR_TYPE type_;
+    bool optional_;
 
-    Assignment(std::string vname, std::string value, VAR_TYPE type) {
+    Assignment(std::string vname, std::string value, VAR_TYPE type, bool optional) {
         vname_ = vname;
         value_ = value;
         type_ = type;
+        optional_ = optional;
     }
 };
 
@@ -111,9 +113,9 @@ public:
         type_ = type;
     }
 
-    Assignment createAssignment(std::string val) {
+    Assignment createAssignment(std::string val, bool optional=false) {
         if (index_.find(val) != index_.end() || STATEOBS_TYPES.find(val) != STATEOBS_TYPES.end()) {
-            return Assignment(name_, val, type_);
+            return Assignment(name_, val, type_, optional);
         }
         throw std::invalid_argument("Invalid value provided to createAssignment");
     }

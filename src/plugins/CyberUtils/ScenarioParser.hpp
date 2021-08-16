@@ -1,6 +1,7 @@
 #ifndef _SCENARIO_PARSER_HPP_
 #define _SCENARIO_PARSER_HPP_
 #include "yaml-cpp/yaml.h"
+#include "yaml-cpp/exceptions.h"
 #include "ScenarioUtils.hpp"
 #include "Scenario.hpp"
 #include "SVar.hpp"
@@ -45,7 +46,7 @@ public:
             std::vector<std::string> values = si->second["values"].as<std::vector<std::string>>();
             SVar var(vname, values);
             var.decay = si->second["decay"].as<float>();
-            var.fullyObs = si->second["fully_obs"].as<bool>();
+            var.fullyObs = (si->second["fully_obs"]) ? si->second["fully_obs"].as<bool>() : false;
             var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);
         }
@@ -76,11 +77,15 @@ public:
 
     std::vector<Assignment> extractAssignments(YAML::Node node, bool isObsNode=false)  {
         std::vector<Assignment> assignments;
-        for(YAML::const_iterator ci = node.begin(); ci != node.end(); ++ci) {
-            std::string name = ci->first.as<std::string>();
-            std::string val = ci->second.as<std::string>();
-            SVar var = (isObsNode) ? scenario->getObsVar(name) : scenario->getStateVar(name);
-            assignments.push_back(var.createAssignment(val));
+        if (node.size() > 0) {
+            bool optional = node.begin()->first.as<std::string>() == "optional" && node.begin()->second.IsMap();
+            if (optional) node = node["optional"];
+            for (YAML::const_iterator ci=node.begin(); ci != node.end(); ++ci) {
+                std::string name = ci->first.as<std::string>();
+                std::string val = ci->second.as<std::string>();
+                SVar var = (isObsNode) ? scenario->getObsVar(name) : scenario->getStateVar(name);
+                assignments.push_back(var.createAssignment(val, optional));
+            }
         }
         return assignments;
     }
@@ -103,7 +108,12 @@ public:
         YAML::Node terminal = root["terminal_states"];
         for (YAML::const_iterator ti = terminal.begin(); ti != terminal.end(); ++ti) {
             std::string tname = ti->first.as<std::string>();
-            float reward = ti->second["reward"].as<float>();
+            float reward;
+            try {
+                reward = ti->second["reward"].as<float>();
+            } catch (const YAML::BadConversion& e) {
+                reward = ti->second["reward"].as<int>();
+            }
             std::vector<Assignment> conditions = extractAssignments(ti->second["state"]);
             Terminal terminal(tname, conditions, reward);
             scenario->addTerminal(terminal);

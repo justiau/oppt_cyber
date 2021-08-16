@@ -13,8 +13,9 @@ public:
     SAction(std::string name, float cost, float probSuccess, std::vector<Assignment> preconditions)
         : name_(name)
         , cost_(cost)
-        , probSuccess_(probSuccess)
-        , preconditions_(preconditions){
+        , probSuccess_(probSuccess) {
+            preconditions_ = preconditions;
+            optionalPrecons = preconditions_.size() > 0 && preconditions[0].optional_;
     };
 
     virtual ~SAction() = default;
@@ -24,6 +25,8 @@ public:
     float cost_;
 
     float probSuccess_;
+
+    bool optionalPrecons;
 
     // onFail first contains state transitions
     // onFail second contains observations

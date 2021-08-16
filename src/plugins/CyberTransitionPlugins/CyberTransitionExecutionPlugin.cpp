@@ -54,7 +54,7 @@ public:
         FloatType p = action.probSuccess_;
         FloatType success = (FloatType) successDist(*(randomGenerator.get()));
         // action preconditions depend on currentState
-        bool preconTrue = scenario->isAllAssignTrue(action.preconditions_);
+        bool preconTrue = scenario->checkPreconditions(action);
         if (preconTrue) {
             // on preconditions true
             std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;
@@ -71,7 +71,7 @@ public:
         SAction defAction = defender->getAction(defActionVal);
         FloatType defActionProb = defAction.probSuccess_;
         FloatType defSuccess = (FloatType) successDist(*(randomGenerator.get()));
-        bool defPreconTrue = scenario->isAllAssignTrue(defAction.preconditions_);
+        bool defPreconTrue = scenario->checkPreconditions(action);
         if (defPreconTrue) {
             // on preconditions true
             std::vector<Assignment> effects = (defSuccess < p) ? defAction.onSuccess_.first : defAction.onFail_.first;

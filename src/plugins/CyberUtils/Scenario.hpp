@@ -209,6 +209,10 @@ public:
         return floatVec;
     }
 
+    bool checkPreconditions(SAction a) {
+        return (a.optionalPrecons) ? isAnyAssignTrue(a.preconditions_) : isAllAssignTrue(a.preconditions_);
+    }
+
     bool isAssignTrue(Assignment a) {
         int si = getStateIndex(a.vname_);
         int vi = state[si].getIndex(a.value_);
@@ -223,6 +227,16 @@ public:
             }
         }
         return true;
+    }
+
+    bool isAnyAssignTrue(std::vector<Assignment> assigns) {
+        for (auto a : assigns) {
+            if (isAssignTrue(a)) {
+                // return true on first success
+                return true;
+            }
+        }
+        return false;
     }
 
     void updateMaxObsSize() {

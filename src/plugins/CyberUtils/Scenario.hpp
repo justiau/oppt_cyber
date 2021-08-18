@@ -21,10 +21,10 @@ public:
 
 private:
     // static discount
-    float discount;
+    float discount = 0;
 
     // zero-indexed max observation size including null observation
-    int maxObsSize;
+    int maxObsSize = 0;
 
     // static list of variables
     std::vector<SVar> state;

@@ -81,7 +81,7 @@ public:
 
     VAR_TYPE type_ = VAR_TYPE::STATE_TRANSITION;
 
-    float decay;
+    float decay = 0;
 
     bool fullyObs = false;
 

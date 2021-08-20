@@ -1,8 +1,11 @@
 ADD_TRANSITION_PLUGIN(CyberTransitionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionPlugin.cpp)
 target_include_directories(CyberTransitionPlugin PRIVATE ${PROJECT_SOURCE_DIR})
 
-ADD_TRANSITION_PLUGIN(CyberTransitionPlanningPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionPlanningPlugin.cpp)
-target_include_directories(CyberTransitionPlanningPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+ADD_TRANSITION_PLUGIN(CyberDecayTransitionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberDecayTransitionPlugin.cpp)
+target_include_directories(CyberDecayTransitionPlugin PRIVATE ${PROJECT_SOURCE_DIR})
 
-ADD_TRANSITION_PLUGIN(CyberTransitionExecutionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberTransitionExecutionPlugin.cpp)
-target_include_directories(CyberTransitionExecutionPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+ADD_TRANSITION_PLUGIN(CyberDefenderTransitionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberDefenderTransitionPlugin.cpp)
+target_include_directories(CyberDefenderTransitionPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+
+ADD_TRANSITION_PLUGIN(CyberLDTransitionPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberLDTransitionPlugin.cpp)
+target_include_directories(CyberLDTransitionPlugin PRIVATE ${PROJECT_SOURCE_DIR})

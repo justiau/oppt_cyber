@@ -26,6 +26,9 @@ private:
     // static discount
     float discount = 0;
 
+    // static resolution / decay step for ld pen tester
+    float decayStep = 0;
+
     // zero-indexed max observation size including null observation
     int maxObsSize = 0;
 
@@ -143,6 +146,10 @@ public:
     // write methods for parsing
     void setDiscount(float d) {
         discount = d;
+    }
+
+    void setDecayStep(float d) {
+        decayStep = d;
     }
     
     void addStateVar(SVar var) {

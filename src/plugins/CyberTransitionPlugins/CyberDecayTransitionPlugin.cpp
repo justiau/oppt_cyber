@@ -9,14 +9,14 @@
 
 namespace oppt
 {
-class CyberTransitionPlanningPlugin: public TransitionPlugin
+class CyberDecayTransitionPlugin: public TransitionPlugin
 {
 public:
-    CyberTransitionPlanningPlugin():
+    CyberDecayTransitionPlugin():
         TransitionPlugin() {
     }
 
-    virtual ~CyberTransitionPlanningPlugin() = default;
+    virtual ~CyberDecayTransitionPlugin() = default;
 
     virtual bool load(const std::string& optionsFile) override {
         // overwrite action space with custom action space discretizer
@@ -102,6 +102,6 @@ private:
     Scenario* scenario;
 };
 
-OPPT_REGISTER_TRANSITION_PLUGIN(CyberTransitionPlanningPlugin)
+OPPT_REGISTER_TRANSITION_PLUGIN(CyberDecayTransitionPlugin)
 
 }

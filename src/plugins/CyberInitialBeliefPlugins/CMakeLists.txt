@@ -1,2 +1,5 @@
 ADD_INITIAL_BELIEF_PLUGIN(CyberInitialBeliefPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberInitialBeliefPlugin.cpp)
 target_include_directories(CyberInitialBeliefPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+
+ADD_INITIAL_BELIEF_PLUGIN(CyberLDInitialBeliefPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberLDInitialBeliefPlugin.cpp)
+target_include_directories(CyberLDInitialBeliefPlugin PRIVATE ${PROJECT_SOURCE_DIR})

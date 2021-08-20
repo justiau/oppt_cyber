@@ -39,6 +39,12 @@ public:
         scenario->setDiscount(root["discount"].as<float>());
     }
 
+    void parseDecayStep(){
+        if (root["decay_step"]) {
+            scenario->setDecayStep(root["decay_step"].as<float>());
+        }
+    }
+
     void parseStateSpace() {
         YAML::Node state = root["state_space"];
         for(YAML::const_iterator si = state.begin(); si != state.end(); ++si) {

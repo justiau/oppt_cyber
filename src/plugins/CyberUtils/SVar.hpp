@@ -93,6 +93,12 @@ public:
         return index_[val];
     }
 
+    std::string getValue(int index) {
+        if (index > 0 && index < values_.size()) {
+            return values_[index];
+        }
+    }
+
     int getRandIndex() {
         unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator(seed1);

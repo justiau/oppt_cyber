@@ -94,7 +94,7 @@ public:
     }
 
     std::string getValue(int index) {
-        if (index > 0 && index < values_.size()) {
+        if (index >= 0 && index < values_.size()) {
             return values_[index];
         }
     }

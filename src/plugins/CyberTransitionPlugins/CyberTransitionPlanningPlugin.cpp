@@ -74,8 +74,6 @@ public:
         for (size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
             int opptVal = scenario->getOpptVal(i);
-            // do not reopen closed ports
-            if (var.getValue(opptVal) == "closed") continue;
             if (var.decay > 0) {
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));

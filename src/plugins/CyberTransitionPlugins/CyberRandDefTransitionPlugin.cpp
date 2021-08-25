@@ -5,25 +5,24 @@
 #include "../CyberUtils/SAction.hpp"
 #include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
-#include <unordered_set>
 
 namespace oppt
 {
-class CyberDecayTransitionPlugin: public TransitionPlugin
+class CyberRandDefTransitionPlugin: public TransitionPlugin
 {
 public:
-    CyberDecayTransitionPlugin():
+    CyberRandDefTransitionPlugin():
         TransitionPlugin() {
     }
 
-    virtual ~CyberDecayTransitionPlugin() = default;
+    virtual ~CyberRandDefTransitionPlugin() = default;
 
     virtual bool load(const std::string& optionsFile) override {
         // overwrite action space with custom action space discretizer
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
-
+        defender = generalOptions->getDefender();
         auto actionSpace = robotEnvironment_->getRobot()->getActionSpace();
 
         // upper and lower bounds from scenario values
@@ -47,15 +46,13 @@ public:
         VectorFloat currentState = propagationRequest->currentState->as<VectorState>()->asVector();
         std::uniform_real_distribution<double> successDist(0,1);
         auto randomGenerator = robotEnvironment_->getRobot()->getRandomEngine();
-
+        // attacker action
         // load oppt state into scenario
         scenario->setOpptState(currentState);
-
         int actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
         FloatType p = action.probSuccess_;
         FloatType success = (FloatType) successDist(*(randomGenerator.get()));
-
         // action preconditions depend on currentState
         bool preconTrue = scenario->checkPreconditions(action);
         if (preconTrue) {
@@ -65,28 +62,21 @@ public:
                 scenario->assignState(e);
             }
         }
-        
-        // simulate defender behaviour with information decay
-        FloatType decaySuccess;
-        std::unordered_set<std::string> affectedSet = action.getAffectedSet();
-        std::vector<SVar> stateVars = scenario->getStateVars();
-        for (size_t i=0; i<stateVars.size(); ++i) {
-            SVar var = stateVars[i];
-            if (var.decay > 0) {
-                if (affectedSet.find(var.name_) == affectedSet.end()) {
-                    decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
-                    if (decaySuccess < var.decay) {
-                        int opptVal = scenario->getOpptVal(i);
-                        std::vector<std::string> values = var.getValues();
-                        // erase existing value
-                        values.erase(values.begin() + opptVal);
-                        std::uniform_int_distribution<> decayStateDist(0,values.size() - 1);
-                        // make decay assignment
-                        int decayStateVal = decayStateDist(*(randomGenerator.get()));
-                        Assignment decayChange = var.createAssignment(values[decayStateVal]);
-                        scenario->assignState(decayChange);
-                    }
-                }
+
+        // defender action
+        // get random defender action
+        int defActionSize = defender->getActionsSize();
+        std::uniform_int_distribution<> defActionDist(0,defActionSize - 1);
+        int defActionVal = defActionDist(*(randomGenerator.get()));
+        SAction defAction = defender->getAction(defActionVal);
+        FloatType defActionProb = defAction.probSuccess_;
+        FloatType defSuccess = (FloatType) successDist(*(randomGenerator.get()));
+        bool defPreconTrue = scenario->checkPreconditions(action);
+        if (defPreconTrue) {
+            // on preconditions true
+            std::vector<Assignment> effects = (defSuccess < p) ? defAction.onSuccess_.first : defAction.onFail_.first;
+            for (auto e : effects) {
+                scenario->assignState(e);
             }
         }
 
@@ -100,8 +90,9 @@ public:
     
 private:
     Scenario* scenario;
+    Scenario* defender;
 };
 
-OPPT_REGISTER_TRANSITION_PLUGIN(CyberDecayTransitionPlugin)
+OPPT_REGISTER_TRANSITION_PLUGIN(CyberRandDefTransitionPlugin)
 
 }

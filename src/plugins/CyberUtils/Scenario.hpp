@@ -63,8 +63,20 @@ public:
         return discount;
     }
 
+    float getDecayStep() {
+        return decayStep;
+    }
+
     int getStateSize() {
         return state.size();
+    }
+
+    // for LD pentester get the index for the decay variable
+    int getDecayIndex() {
+        if (decayStep > 0) {
+            return state.size() + 1;
+        }
+        return -1;
     }
 
     SVar getStateVar(int stateIndex) {
@@ -267,6 +279,17 @@ public:
             binNumber += obsVal * (std::pow(maxObsSize,i));
         }
         return binNumber;
+    }
+
+    // for LD pen-testing
+    float getDecayValue() {
+        int decayIndex = getDecayIndex();
+        if (decayIndex > -1) {
+            return opptState_[decayIndex] * decayStep;
+        } else {
+            std::cout<<"getDecayValue called without decay step > 0"<<std::endl;
+            exit(1);
+        }
     }
 
     int getOpptVal(std::string vname) {

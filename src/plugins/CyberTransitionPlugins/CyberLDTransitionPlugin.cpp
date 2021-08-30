@@ -23,7 +23,7 @@ public:
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         scenario = generalOptions->getScenario();
-
+        decayStep = scenario->getDecayStep();
         auto actionSpace = robotEnvironment_->getRobot()->getActionSpace();
 
         // upper and lower bounds from scenario values
@@ -68,14 +68,16 @@ public:
         
         // simulate defender behaviour with information decay
         FloatType decaySuccess;
+        FloatType decay;
         std::unordered_set<std::string> affectedSet = action.getAffectedSet();
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
-            if (var.decay > 0) {
+            if (decayStep > 0) {
+                decay = scenario->getDecayValue();
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
-                    if (decaySuccess < var.decay) {
+                    if (decaySuccess < decay) {
                         int opptVal = scenario->getOpptVal(i);
                         std::vector<std::string> values = var.getValues();
                         // erase existing value
@@ -100,6 +102,7 @@ public:
     
 private:
     Scenario* scenario;
+    float decayStep;
 };
 
 OPPT_REGISTER_TRANSITION_PLUGIN(CyberLDTransitionPlugin)

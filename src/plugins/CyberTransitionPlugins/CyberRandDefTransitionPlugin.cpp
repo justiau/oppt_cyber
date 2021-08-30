@@ -5,6 +5,7 @@
 #include "../CyberUtils/SAction.hpp"
 #include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
+#include <iostream>
 
 namespace oppt
 {
@@ -71,10 +72,10 @@ public:
         SAction defAction = defender->getAction(defActionVal);
         FloatType defActionProb = defAction.probSuccess_;
         FloatType defSuccess = (FloatType) successDist(*(randomGenerator.get()));
-        bool defPreconTrue = scenario->checkPreconditions(action);
+        bool defPreconTrue = scenario->checkPreconditions(defAction);
         if (defPreconTrue) {
             // on preconditions true
-            std::vector<Assignment> effects = (defSuccess < p) ? defAction.onSuccess_.first : defAction.onFail_.first;
+            std::vector<Assignment> effects = (defSuccess < defActionProb) ? defAction.onSuccess_.first : defAction.onFail_.first;
             for (auto e : effects) {
                 scenario->assignState(e);
             }

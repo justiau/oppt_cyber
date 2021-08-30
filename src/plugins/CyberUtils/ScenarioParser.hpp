@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cmath>
 
 class ScenarioParser {
 public:
@@ -21,6 +22,7 @@ public:
         root = YAML::LoadFile(scenarioPath);
         scenario = new Scenario();
         parseDiscount();
+        parseDecayStep();
         parseStateSpace();
         parseObservationSpace();
         parseActionSpace();
@@ -29,7 +31,7 @@ public:
 
     Scenario* get() {
         if (scenario == NULL) {
-            std::cout << "Pomdp is null. Parse pomdpx before calling 'get()'" << std::endl;
+            std::cout << "Scenario is null. Parse the scenario before calling 'get()'" << std::endl;
             exit(1);
         }
         return scenario;
@@ -40,8 +42,19 @@ public:
     }
 
     void parseDecayStep(){
+        // check decay resolution divides into 1
         if (root["decay_step"]) {
-            scenario->setDecayStep(root["decay_step"].as<float>());
+            float decayStep = root["decay_step"].as<float>();
+            if (decayStep != 0) {
+                float r = fmod(1.0, decayStep);
+                bool decayValid = r == 0 || floatCompare(r,decayStep);
+                if (decayValid) {
+                    scenario->setDecayStep(decayStep);
+                } else {
+                    std::cout << "Decay step does not divide into 1" << std::endl;
+                    exit(1);
+                }
+            }
         }
     }
 

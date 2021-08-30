@@ -2,6 +2,7 @@
 #define _SCENARIO_UTILS_HPP_
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <unordered_map>
 
 template<typename T>
@@ -18,6 +19,11 @@ void print_map(std::unordered_map<K, V> const &m) {
         std::cout << pair.first << ": " << pair.second << "\n";
     }
     std::cout << "}" << std::endl;
+}
+
+inline bool floatCompare(float x, float y) {
+    const float epsilon = 1e-5;
+    return fabs(x - y) < epsilon;
 }
 
 #endif

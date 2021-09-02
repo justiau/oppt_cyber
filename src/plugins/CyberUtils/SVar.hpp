@@ -83,6 +83,8 @@ public:
 
     float decay = 0;
 
+    bool learnDecay = false;
+
     bool fullyObs = false;
 
     std::string initValue;

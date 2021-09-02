@@ -8,14 +8,14 @@
 
 namespace oppt
 {
-class CyberInitialBeliefPlugin: public InitialBeliefPlugin
+class CyberLDInitialBeliefPlugin: public InitialBeliefPlugin
 {
 public:
-    CyberInitialBeliefPlugin():
+    CyberLDInitialBeliefPlugin():
         InitialBeliefPlugin(){
     }
 
-    virtual ~CyberInitialBeliefPlugin() = default;
+    virtual ~CyberLDInitialBeliefPlugin() = default;
 
     virtual bool load(const std::string& optionsFile) override {
         parseOptions_<CyberOptions>(optionsFile);
@@ -42,12 +42,14 @@ public:
                 initStateVec.push_back(var.getIndex(var.initValue));
             }
         }
+
         // set decay value to uniform value over discretized resolution
         if (decayStep > 0) {
             int maxDecayEnum = static_cast<int>(1 / decayStep);
             std::uniform_int_distribution<> d(0, maxDecayEnum);
             initStateVec.push_back(d(*(randomGenerator.get())));
         }
+
         // last state indicates action success
         initStateVec.push_back(0);
         if (initStateVec.size() != nStates)
@@ -62,7 +64,7 @@ private:
     float decayStep;
 };
 
-OPPT_REGISTER_INITIAL_BELIEF_PLUGIN(CyberInitialBeliefPlugin)
+OPPT_REGISTER_INITIAL_BELIEF_PLUGIN(CyberLDInitialBeliefPlugin)
 
 }
 

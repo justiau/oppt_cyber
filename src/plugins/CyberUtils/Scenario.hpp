@@ -74,7 +74,7 @@ public:
     // for LD pentester get the index for the decay variable
     int getDecayIndex() {
         if (decayStep > 0) {
-            return state.size() + 1;
+            return state.size();
         }
         return -1;
     }

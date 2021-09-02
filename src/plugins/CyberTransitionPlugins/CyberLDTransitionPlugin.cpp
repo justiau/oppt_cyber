@@ -73,7 +73,7 @@ public:
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
-            if (decayStep > 0) {
+            if (var.learnDecay && decayStep > 0) {
                 decay = scenario->getDecayValue();
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));

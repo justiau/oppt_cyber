@@ -12,6 +12,9 @@
 #include <vector>
 #include <cmath>
 
+using std::cout;
+using std::endl;
+
 class ScenarioParser {
 public:
     ScenarioParser() = default;
@@ -64,7 +67,13 @@ public:
             std::string vname = si->first.as<std::string>();
             std::vector<std::string> values = si->second["values"].as<std::vector<std::string>>();
             SVar var(vname, values);
-            var.decay = si->second["decay"].as<float>();
+            if (si->second["decay"]) {
+                try {
+                    var.decay = si->second["decay"].as<float>();
+                } catch (const YAML::BadConversion& e) {
+                    var.learnDecay = si->second["decay"].as<bool>();
+                }
+            }
             var.fullyObs = (si->second["fully_obs"]) ? si->second["fully_obs"].as<bool>() : false;
             var.initValue = si->second["initial_value"].as<std::string>();
             scenario->addStateVar(var);

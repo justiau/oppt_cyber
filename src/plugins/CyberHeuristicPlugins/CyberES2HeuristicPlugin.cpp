@@ -46,7 +46,7 @@ public:
         int position = graph.at("normal");
         for(size_t i=stateVars.size()-1; i-->0;) {
             SVar var = stateVars[i];
-            Assignment a = var.createAssignment("True");
+            Assignment a = var.createAssignment("true");
             if (scenario->isAssignTrue(a)) {
                 if (var.name_ == "httpd_hacked" || var.name_ == "ftpd_hacked") {
                     position = graph.at("hacked");

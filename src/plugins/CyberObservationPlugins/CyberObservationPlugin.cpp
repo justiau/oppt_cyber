@@ -67,6 +67,7 @@ public :
         // observation vector for which we request to calculate likelihood given state and action
         VectorFloat observationVecReq = observation->as<DiscreteVectorObservation>()->asVector();
         // observation vector result given state and action
+        VectorFloat observationVecRes(nObs, -1.0);
         // assume observation is not noisy
         // calculate the likelihood of getting observation given state and action
         scenario->setOpptState(stateVec);

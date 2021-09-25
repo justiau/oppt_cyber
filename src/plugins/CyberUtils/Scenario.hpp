@@ -79,8 +79,11 @@ public:
         return -1;
     }
 
-    SVar getStateVar(int stateIndex) {
-        return state[stateIndex];
+    SVar getStateVar(int index) {
+        if (index > -1 && index < state.size()) {
+            return state[index];
+        }
+        throw std::invalid_argument("Index out of range for getStateVar");
     }
 
     SVar getStateVar(std::string vname) {
@@ -96,8 +99,8 @@ public:
         return getObsIndex(a.vname_) < stateObs.size();
     }
 
-    SVar getObsVar(int obsIndex) {
-        return (obsIndex < stateObs.size()) ? stateObs[obsIndex] : nonStateObs[obsIndex - stateObs.size()];
+    SVar getObsVar(int index) {
+        return (index < stateObs.size()) ? stateObs[index] : nonStateObs[index - stateObs.size()];
     }
 
     SVar getObsVar(std::string vname) {
@@ -373,7 +376,10 @@ public:
 
 private:
     int getStateIndex(std::string vname) {
-        return stateIndex.find(vname)->second;
+        auto found = stateIndex.find(vname);
+        if (found != stateIndex.end())
+            return stateIndex.find(vname)->second;
+        throw std::invalid_argument("Variable name not in state index");
     }
 
     int getObsIndex(std::string oname) {

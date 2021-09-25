@@ -90,9 +90,20 @@ public:
     std::string initValue;
 
     int getIndex(std::string val) {
-        if (index_.find(val) == index_.end())
-            return -1;
-        return index_[val];
+        if (index_.find(val) != index_.end())
+            return index_[val];
+        throw std::invalid_argument("Value name not found in state variable");
+    }
+
+    std::string getValue(int index) {
+        if (index > -1 && index < values_.size()) {
+            return values_[index];
+        }
+        throw std::invalid_argument("Index out of range for SVar get value");
+    }
+
+    bool checkValue(std::string val) {
+        return index_.find(val) != index_.end();
     }
 
     int getRandIndex() {

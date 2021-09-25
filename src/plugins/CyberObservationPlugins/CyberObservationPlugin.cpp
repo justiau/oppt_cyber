@@ -67,7 +67,6 @@ public :
         // observation vector for which we request to calculate likelihood given state and action
         VectorFloat observationVecReq = observation->as<DiscreteVectorObservation>()->asVector();
         // observation vector result given state and action
-        VectorFloat observationVecRes(nObs, -1.0);
         // assume observation is not noisy
         // calculate the likelihood of getting observation given state and action
         scenario->setOpptState(stateVec);
@@ -95,7 +94,8 @@ public :
         // std::cout << "observation: " << std::endl;
         // for (ssize_t i=0; i < observationVecReq.size(); ++i) {
         //     SVar sVar = scenario->getObsVar(i);
-        //     std::cout << sVar.name_ << " : " << sVar.getValue(observationVecReq[i]) << ", ";
+        //     std::string obsVal = (observationVecReq[i] > -1) ? sVar.getValue(observationVecReq[i]) : "null";
+        //         std::cout << sVar.name_ << " : " << obsVal << ", ";
         // }
         // std::cout << std::endl;
         // getchar();

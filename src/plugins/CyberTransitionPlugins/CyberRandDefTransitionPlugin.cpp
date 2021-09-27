@@ -50,18 +50,18 @@ public:
         // attacker action
         // load oppt state into scenario
         scenario->setOpptState(currentState);
+        
         int actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
         FloatType p = action.probSuccess_;
         FloatType success = (FloatType) successDist(*(randomGenerator.get()));
+
         // action preconditions depend on currentState
         bool preconTrue = scenario->checkPreconditions(action);
-        if (preconTrue) {
-            // on preconditions true
-            std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;
-            for (auto e : effects) {
-                scenario->assignState(e);
-            }
+        bool actionSuccess = preconTrue && (success < p);
+        std::vector<Assignment> effects = (actionSuccess) ? action.onSuccess_.first : action.onFail_.first;
+        for (auto e : effects) {
+            scenario->assignState(e);
         }
 
         // defender action
@@ -73,17 +73,14 @@ public:
         FloatType defActionProb = defAction.probSuccess_;
         FloatType defSuccess = (FloatType) successDist(*(randomGenerator.get()));
         bool defPreconTrue = scenario->checkPreconditions(defAction);
-        if (defPreconTrue) {
-            // on preconditions true
-            std::vector<Assignment> effects = (defSuccess < defActionProb) ? defAction.onSuccess_.first : defAction.onFail_.first;
-            for (auto e : effects) {
-                scenario->assignState(e);
-            }
+        bool defActionSuccess = defPreconTrue && (defSuccess < defActionProb);
+        std::vector<Assignment> defEffects = (defActionSuccess) ? defAction.onSuccess_.first : defAction.onFail_.first;
+        for (auto e : defEffects) {
+            scenario->assignState(e);
         }
-
         VectorFloat resultingState = scenario->getOpptState();
         // set action success state to 1 or 0  depending on result to be used by reward and observation
-        resultingState.back() = (success < p) ? 1.0 : 0.0;
+        resultingState.back() = (actionSuccess) ? 1.0 : 0.0;
         propagationResult->previousState = propagationRequest->currentState.get();
         propagationResult->nextState = std::make_shared<oppt::VectorState>(resultingState);
         return propagationResult;

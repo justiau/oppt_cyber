@@ -56,16 +56,14 @@ public:
         FloatType success = (FloatType) d(*(randomGenerator.get()));
         // action preconditions depend on currentState
         bool preconTrue = scenario->checkPreconditions(action);
-        if (preconTrue) {
-            // on preconditions true
-            std::vector<Assignment> effects = (success < p) ? action.onSuccess_.first : action.onFail_.first;
-            for (auto e : effects) {
-                scenario->assignState(e);
-            }
+        bool actionSuccess = preconTrue && (success < p);
+        std::vector<Assignment> effects = (actionSuccess) ? action.onSuccess_.first : action.onFail_.first;
+        for (auto e : effects) {
+            scenario->assignState(e);
         }
         VectorFloat resultingState = scenario->getOpptState();
         // set action success state to 1 or 0  depending on result to be used by reward and observation
-        resultingState.back() = (success < p) ? 1.0 : 0.0;
+        resultingState.back() = (actionSuccess) ? 1.0 : 0.0;
         propagationResult->previousState = propagationRequest->currentState.get();
         propagationResult->nextState = std::make_shared<oppt::VectorState>(resultingState);
         return propagationResult;

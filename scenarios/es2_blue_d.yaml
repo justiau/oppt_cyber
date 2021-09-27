@@ -1,162 +1,162 @@
-description: "Network security game: red"
-discount: 0.95
-state_space:
-  httpd_attacked:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - 0
-      - 0
-  httpd_hacked:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - -10
-      - 0
-  ftpd_attacked:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - 0
-      - 0
-  ftpd_hacked:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - -10
-      - 0
-  webserver_sniffer_installed:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - -20
-      - 0
-  workstation_hacked:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: uniform
-    reward:
-      - -50
-      - 0
-  workstation_data_stolen:
-    values:
-      - True
-      - False
-    decay: 0.0
-    initial_value: False
-terminal_states:
-  goal:
-    state:
-      workstation_data_stolen: True
-    reward: -999
-observation_space:
-  state_obs:
-    - httpd_attacked
-    - httpd_hacked
-    - ftpd_attacked
-    - ftpd_hacked
-    - webserver_sniffer_installed
-    - workstation_hacked
-  non_state_obs: {}
 action_space:
-  restart_httpd:
-    preconditions: {}
+  do_nothing:
+    cost: 0
     effects:
-      success:
-        observation: {}
-        next_state:
-          httpd_attacked: False
-          httpd_hacked: False
       failure:
-        observation: {}
         next_state: {}
-    prob_success: 1.0
-    cost: 10
-  restart_ftpd:
+        observation: {}
+      success:
+        next_state: {}
+        observation: {}
     preconditions: {}
-    effects:
-      success:
-        observation: {}
-        next_state:
-          ftpd_attacked: False
-          ftpd_hacked: False
-      failure:
-        observation: {}
-        next_state: {}
     prob_success: 1.0
-    cost: 10
-  remove_sniffer:
-    preconditions: {}
-    effects:
-      success:
-        observation: {}
-        next_state:
-          webserver_sniffer_installed: False
-      failure:
-        observation: {}
-        next_state: {}
-    prob_success: 1.0
-    cost: 10
-  remove_compromised_account:
-    preconditions: {}
-    effects:
-      success:
-        observation: {}
-        next_state:
-          workstation_hacked: False
-      failure:
-        observation: {}
-        next_state: {}
-    prob_success: 1.0
-    cost: 10
   monitor:
-    preconditions: {}
+    cost: 1
     effects:
-      success:
-        observation:
-          httpd_attacked: actual
-          httpd_hacked: actual
-          ftpd_attacked: actual
-          ftpd_hacked: actual
-          webserver_sniffer_installed: actual
-          workstation_hacked: actual
-        next_state: {}
       failure:
+        next_state: {}
         observation:
-          httpd_attacked: noisy
-          httpd_hacked: noisy
           ftpd_attacked: noisy
           ftpd_hacked: noisy
+          httpd_attacked: noisy
+          httpd_hacked: noisy
           webserver_sniffer_installed: noisy
           workstation_hacked: noisy
-        next_state: {}
-    prob_success: 0.90
-    cost: 1
-  do_nothing:
-    preconditions: {}
-    effects:
       success:
-        observation: {}
         next_state: {}
+        observation:
+          ftpd_attacked: actual
+          ftpd_hacked: actual
+          httpd_attacked: actual
+          httpd_hacked: actual
+          webserver_sniffer_installed: actual
+          workstation_hacked: actual
+    preconditions: {}
+    prob_success: 0.9
+  remove_compromised_account:
+    cost: 10
+    effects:
       failure:
-        observation: {}
         next_state: {}
+        observation: {}
+      success:
+        next_state:
+          workstation_hacked: false
+        observation: {}
+    preconditions: {}
     prob_success: 1.0
-    cost: 0
+  remove_sniffer:
+    cost: 10
+    effects:
+      failure:
+        next_state: {}
+        observation: {}
+      success:
+        next_state:
+          webserver_sniffer_installed: false
+        observation: {}
+    preconditions: {}
+    prob_success: 1.0
+  restart_ftpd:
+    cost: 10
+    effects:
+      failure:
+        next_state: {}
+        observation: {}
+      success:
+        next_state:
+          ftpd_attacked: false
+          ftpd_hacked: false
+        observation: {}
+    preconditions: {}
+    prob_success: 1.0
+  restart_httpd:
+    cost: 10
+    effects:
+      failure:
+        next_state: {}
+        observation: {}
+      success:
+        next_state:
+          httpd_attacked: false
+          httpd_hacked: false
+        observation: {}
+    preconditions: {}
+    prob_success: 1.0
+description: 'Network security game: red'
+discount: 0.95
+observation_space:
+  non_state_obs: {}
+  state_obs:
+  - httpd_attacked
+  - httpd_hacked
+  - ftpd_attacked
+  - ftpd_hacked
+  - webserver_sniffer_installed
+  - workstation_hacked
+state_space:
+  ftpd_attacked:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - 0
+    - 0
+    values:
+    - true
+    - false
+  ftpd_hacked:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - -10
+    - 0
+    values:
+    - true
+    - false
+  httpd_attacked:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - 0
+    - 0
+    values:
+    - true
+    - false
+  httpd_hacked:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - -10
+    - 0
+    values:
+    - true
+    - false
+  webserver_sniffer_installed:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - -20
+    - 0
+    values:
+    - true
+    - false
+  workstation_data_stolen:
+    decay: 0.0
+    initial_value: false
+    values:
+    - true
+    - false
+  workstation_hacked:
+    decay: 0.0
+    initial_value: uniform
+    reward:
+    - -50
+    - 0
+    values:
+    - true
+    - false
+terminal_states:
+  goal:
+    reward: -999
+    state:
+      workstation_data_stolen: true

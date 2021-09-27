@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 namespace oppt
 {
@@ -43,24 +44,15 @@ public:
         VectorFloat currentState = heuristicInfo->currentState->as<VectorState>()->asVector();
         scenario->setOpptState(currentState);
         std::vector<SVar> stateVars = scenario->getStateVars();
-        int position = graph.at("normal");
-        for(size_t i=stateVars.size()-1; i-->0;) {
+        int position = 0;
+        for(size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
-            Assignment a = (var.checkValue("True")) ? var.createAssignment("True") : var.createAssignment("true");
+            Assignment a = var.createAssignment("true");
             if (scenario->isAssignTrue(a)) {
-                if (var.name_ == "httpd_hacked" || var.name_ == "ftpd_hacked") {
-                    position = graph.at("hacked");
-                    break;
-                } else if (var.name_ == "httpd_attacked" || var.name_ == "ftpd_attacked") {
-                    position = graph.at("attacked");
-                    // cant break here as ftpd attacked has higher index than httpd hacked
-                } else {
-                    position = graph.at(var.name_);
-                    break;
-                }
+                int position = std::max(position, stateTable.at(var.name_));
             }
         }
-        int distance = graph.size() - 1 - position;
+        int distance = stateTable.size() - 1 - position;
         FloatType currentDiscount = std::pow(heuristicInfo->discountFactor, distance);
         return currentDiscount * maxReward;
     }   
@@ -68,10 +60,11 @@ public:
 private:
     Scenario* scenario;
     FloatType maxReward;
-    std::unordered_map<std::string, int> graph = {
-        {"normal",0},
-        {"attacked",1},
-        {"hacked",2},
+    std::unordered_map<std::string, int> stateTable {
+        {"httpd_attacked",1},
+        {"httpd_hacked",2},
+        {"ftpd_attacked",1},
+        {"ftpd_hacked",2},
         {"webserver_sniffer_installed",3},
         {"workstation_hacked",4},
         {"workstation_data_stolen",5}

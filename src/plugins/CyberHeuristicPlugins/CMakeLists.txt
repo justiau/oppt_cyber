@@ -1,5 +1,8 @@
 ADD_HEURISTIC_PLUGIN(CyberHeuristicPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberHeuristicPlugin.cpp)
 target_include_directories(CyberHeuristicPlugin PRIVATE ${PROJECT_SOURCE_DIR})
 
+ADD_HEURISTIC_PLUGIN(CyberES1HeuristicPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberES1HeuristicPlugin.cpp)
+target_include_directories(CyberES1HeuristicPlugin PRIVATE ${PROJECT_SOURCE_DIR})
+
 ADD_HEURISTIC_PLUGIN(CyberES2HeuristicPlugin ${CMAKE_CURRENT_LIST_DIR}/CyberES2HeuristicPlugin.cpp)
 target_include_directories(CyberES2HeuristicPlugin PRIVATE ${PROJECT_SOURCE_DIR})

@@ -26,6 +26,7 @@ public:
         parseOptions_<CyberOptions>(optionsFile);
         CyberOptions* generalOptions = static_cast<CyberOptions*>(options_.get());
         maxReward = generalOptions->maxReward;
+        minReward = generalOptions->minReward;
         scenario = generalOptions->getScenario();
         return true;
     }
@@ -60,12 +61,14 @@ public:
     virtual FloatType getHeuristicValue(const HeuristicInfo* heuristicInfo) const override {
         VectorFloat currentState = heuristicInfo->currentState->as<VectorState>()->asVector();
         scenario->setOpptState(currentState);
-        return (isStateSolveable()) ? maxReward : 0;
+        FloatType currentDiscount = std::pow(heuristicInfo->discountFactor, heuristicInfo->currentStep);       
+        return (isStateSolveable()) ? currentDiscount * 15 : 0;
     }   
 
 private:
     Scenario* scenario;
     FloatType maxReward;
+    FloatType minReward;
 
 };
 

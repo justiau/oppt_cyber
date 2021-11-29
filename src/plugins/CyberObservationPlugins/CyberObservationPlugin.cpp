@@ -74,32 +74,27 @@ public :
         scenario->setOpptObs(observationVecRes);
         long actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction sAction = scenario->getAction(actionVal);
-        bool actionSuccess = stateVec.back();
-        std::vector<Assignment> effects = (actionSuccess) ? sAction.onSuccess_.second : sAction.onFail_.second;
-        for (auto e : effects) {
-            scenario->assignObs(e);
+
+        scenario->applyAction(sAction, true);
+        VectorFloat observationVecResSucc = scenario->getOpptObs();
+        // scenario->setOpptState(stateVec);
+        scenario->setOpptObs(observationVecRes);
+        // get obs vec for false
+        scenario->applyAction(sAction, false);
+        VectorFloat observationVecResFail = scenario->getOpptObs();
+
+        bool preconTrue = scenario->checkPreconditions(sAction);
+        if (!preconTrue) {
+            if (observationVecReq == observationVecResFail) return 1;
+        } else {
+            if (observationVecReq == observationVecResSucc) {
+                // apply success effects and return action prob success if match succ req
+                return sAction.probSuccess_;
+            } else if (observationVecReq == observationVecResFail) {
+                // apply fail effects and return 1 - action prob success if match fail req
+                return 1 - sAction.probSuccess_;
+            }
         }
-        observationVecRes = scenario->getOpptObs();
-        if (observationVecReq == observationVecRes) {
-            return 1;
-        }
-        // std::cout << "action: " << sAction.name_ << std::endl;
-        // std::cout << "state: " << std::endl;
-        // for (ssize_t i=0; i < stateVec.size() - 1; ++i) {
-        //     SVar sVar = scenario->getStateVar(i);
-        //     std::cout << sVar.name_ << " : " << sVar.getValue(stateVec[i]) << ", ";
-        // }
-        // std::string actionSuccessStr = (stateVec.back()) ? "True" : "False";
-        // std::cout << "action_success : " << actionSuccessStr;
-        // std::cout << std::endl;
-        // std::cout << "observation: " << std::endl;
-        // for (ssize_t i=0; i < observationVecReq.size(); ++i) {
-        //     SVar sVar = scenario->getObsVar(i);
-        //     std::string obsVal = (observationVecReq[i] > -1) ? sVar.getValue(observationVecReq[i]) : "null";
-        //         std::cout << sVar.name_ << " : " << obsVal << ", ";
-        // }
-        // std::cout << std::endl;
-        // getchar();
         return 0;
     }
 

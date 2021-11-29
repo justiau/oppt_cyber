@@ -53,7 +53,8 @@ public:
             }
         }
         int distance = stateTable.size() - 1 - position;
-        FloatType currentDiscount = std::pow(heuristicInfo->discountFactor, distance);
+        FloatType currentDiscount = std::pow(heuristicInfo->discountFactor, heuristicInfo->currentStep);
+        currentDiscount *= std::pow(heuristicInfo->discountFactor, distance);
         return currentDiscount * maxReward;
     }   
 

@@ -229,6 +229,18 @@ public:
         opptObs_ = intVec;
     }
 
+    void updateFullyObs() {
+        // update the oppt obs vector with the fully observed states
+        for (size_t i=0; i < stateObs.size(); ++i) {
+            SVar sObs = stateObs[i];
+            if (sObs.fullyObs) {
+                int obsIndex = getObsIndex(sObs.name_);
+                int stateIndex = getStateIndex(sObs.name_);
+                opptObs_[obsIndex] = opptState_[stateIndex];
+            }
+        }
+    }
+
     std::vector<double> getOpptObs() {
         std::vector<double> floatVec(opptObs_.begin(), opptObs_.end());
         return floatVec;
@@ -337,6 +349,18 @@ public:
         } else {
             throw std::invalid_argument("Assignment type was not an observation but passed to assignObs function");
         }
+    }
+
+    void applyAction(SAction action, bool success) {
+        std::vector<Assignment> stateEffects = (success) ? action.onSuccess_.first : action.onFail_.first;
+        std::vector<Assignment> obsEffects = (success) ? action.onSuccess_.second : action.onFail_.second;
+        for (auto e : stateEffects) {
+            assignState(e);
+        }
+        for (auto e : obsEffects) {
+            assignObs(e);
+        }
+        updateFullyObs();
     }
 
     // debug methods

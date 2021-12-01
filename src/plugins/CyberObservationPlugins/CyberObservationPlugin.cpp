@@ -68,20 +68,31 @@ public :
         VectorFloat observationVecReq = observation->as<DiscreteVectorObservation>()->asVector();
         // observation vector result given state and action
         VectorFloat observationVecRes(nObs, -1.0);
-        // assume observation is not noisy
         // calculate the likelihood of getting observation given state and action
+
+        // set scenario
         scenario->setOpptState(stateVec);
         scenario->setOpptObs(observationVecRes);
+
+        // get and apply action for true
         long actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction sAction = scenario->getAction(actionVal);
 
+        // observation on action success
         scenario->applyAction(sAction, true);
         VectorFloat observationVecResSucc = scenario->getOpptObs();
-        // scenario->setOpptState(stateVec);
+
+        // reset scenario
+        scenario->setOpptState(stateVec);
         scenario->setOpptObs(observationVecRes);
-        // get obs vec for false
+        
+        // observation on action failure
         scenario->applyAction(sAction, false);
         VectorFloat observationVecResFail = scenario->getOpptObs();
+
+        // reset scenario
+        scenario->setOpptState(stateVec);
+        scenario->setOpptObs(observationVecReq);
 
         bool preconTrue = scenario->checkPreconditions(sAction);
         if (!preconTrue) {

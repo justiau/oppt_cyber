@@ -132,13 +132,13 @@ public:
         // list of state observations
         std::vector<std::string> stateObs = sObs.as<std::vector<std::string>>();
         // add fully observed state variables to state observations
-        // std::vector<SVar> stateVars = scenario->getStateVars();
-        // for(size_t i=0; i<stateVars.size(); ++i) {
-        //     SVar var = stateVars[i];
-        //     if (var.fullyObs) {
-        //         stateObs.push_back(var.name_);
-        //     }
-        // }
+        std::vector<SVar> stateVars = scenario->getStateVars();
+        for(size_t i=0; i<stateVars.size(); ++i) {
+            SVar var = stateVars[i];
+            if (var.fullyObs) {
+                stateObs.push_back(var.name_);
+            }
+        }
         scenario->setStateObs(stateObs);
     }
 

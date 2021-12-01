@@ -45,11 +45,16 @@ public :
 
         long actionVal = (unsigned int) actionVec[0] + 0.25;
         SAction action = scenario->getAction(actionVal);
+
         bool actionSuccess = stateVec.back();
-        std::vector<Assignment> effects = (actionSuccess) ? action.onSuccess_.second : action.onFail_.second;
-        for (auto e : effects) {
-            scenario->assignObs(e);
-        }
+
+        // std::vector<Assignment> effects = (actionSuccess) ? action.onSuccess_.second : action.onFail_.second;
+        // for (auto e : effects) {
+        //     scenario->assignObs(e);
+        // }
+
+        scenario->applyAction(action, actionSuccess);
+
         binNumber = scenario->getBinNumber();
         observationVec = scenario->getOpptObs();
         ObservationSharedPtr observation = std::make_shared<DiscreteVectorObservation>(observationVec);

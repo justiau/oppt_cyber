@@ -49,7 +49,7 @@ public:
             SVar var = stateVars[i];
             Assignment a = var.createAssignment("true");
             if (scenario->isAssignTrue(a)) {
-                int position = std::max(position, stateTable.at(var.name_));
+                position = std::max(position, stateTable.at(var.name_));
             }
         }
         int distance = stateTable.size() - 1 - position;

@@ -134,7 +134,7 @@ state_space:
   ftpd_attacked:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0
@@ -144,7 +144,7 @@ state_space:
   ftpd_hacked:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0
@@ -154,7 +154,7 @@ state_space:
   httpd_attacked:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0
@@ -164,7 +164,7 @@ state_space:
   httpd_hacked:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0
@@ -174,7 +174,7 @@ state_space:
   webserver_sniffer_installed:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0
@@ -190,7 +190,7 @@ state_space:
   workstation_hacked:
     decay: 0.0
     initial_value: false
-    one_way_decay: true
+    one_way_decay: false
     reward:
     - 0
     - 0

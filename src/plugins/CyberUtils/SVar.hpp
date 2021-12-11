@@ -87,6 +87,8 @@ public:
 
     bool fullyObs = false;
 
+    bool oneWayDecay = false;
+
     std::string initValue;
 
     int getIndex(std::string val) {

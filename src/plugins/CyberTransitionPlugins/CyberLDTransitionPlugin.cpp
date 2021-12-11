@@ -74,9 +74,14 @@ public:
             if (var.learnDecay && decayStep > 0) {
                 decay = scenario->getDecayValue();
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
+                    int initIndex = var.getIndex(var.initValue);
+                    int opptVal = scenario->getOpptVal(i);
+                    if (var.oneWayDecay && initIndex == opptVal) {
+                        // if one way decay and value is already init value, skip
+                        continue;
+                    }
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
                     if (decaySuccess < decay) {
-                        int opptVal = scenario->getOpptVal(i);
                         std::vector<std::string> values = var.getValues();
                         // erase existing value
                         values.erase(values.begin() + opptVal);

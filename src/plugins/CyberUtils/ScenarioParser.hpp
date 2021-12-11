@@ -76,6 +76,7 @@ public:
             }
             var.fullyObs = (si->second["fully_obs"]) ? si->second["fully_obs"].as<bool>() : false;
             var.initValue = si->second["initial_value"].as<std::string>();
+            var.oneWayDecay = (si->second["one_way_decay"]) ? si->second["one_way_decay"].as<bool>() : false;
             scenario->addStateVar(var);
         }
     }

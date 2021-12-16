@@ -72,11 +72,11 @@ public:
             SVar var = stateVars[i];
             if (var.decay > 0) {
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
-                    int initIndex = var.getIndex(var.initValue);
                     int opptVal = scenario->getOpptVal(i);
-                    if (var.oneWayDecay && initIndex == opptVal) {
+                    if (var.oneWayDecay && var.initValue != "uniform") {
+                        int initIndex = var.getIndex(var.initValue);
                         // if one way decay and value is already init value, skip
-                        continue;
+                        if (initIndex == opptVal) continue;
                     }
                     decaySuccess = (FloatType) successDist(*(randomGenerator.get()));
                     if (decaySuccess < var.decay) {

@@ -72,7 +72,7 @@ public:
         std::vector<SVar> stateVars = scenario->getStateVars();
         for (size_t i=0; i<stateVars.size(); ++i) {
             SVar var = stateVars[i];
-            if (var.learnDecay && decayStep > 0) {
+            if (decayStep > 0 && var.learnDecayMulti > -1) {
                 decay = scenario->getDecayValue(var);
                 if (affectedSet.find(var.name_) == affectedSet.end()) {
                     int opptVal = scenario->getOpptVal(i);

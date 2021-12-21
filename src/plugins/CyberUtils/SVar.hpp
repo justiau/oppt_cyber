@@ -85,6 +85,8 @@ public:
 
     bool learnDecay = false;
 
+    int learnDecayMulti = -1;
+
     bool fullyObs = false;
 
     bool oneWayDecay = false;
@@ -137,6 +139,15 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, SVar const &v) {
         os << v.name_ << std::endl;
+        if (v.decay != 0) {
+            os << "decay: " << v.decay << std::endl;
+        }
+        if (v.learnDecay) {
+            os << "learnDecay: " << v.learnDecay << std::endl;
+        }
+        if (v.learnDecayMulti > -1) {
+            os << "learnDecayMulti: " << v.learnDecayMulti << std::endl;
+        }
         print_vector(v.values_);
         return os;
     }

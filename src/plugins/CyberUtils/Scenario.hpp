@@ -29,6 +29,9 @@ private:
     // static resolution / decay step for ld pen tester
     float decayStep = 0;
 
+    // static resolution - how many decay factors are in the scenario
+    int decayFactors = 0;
+
     // zero-indexed max observation size including null observation
     int maxObsSize = 0;
 
@@ -67,6 +70,10 @@ public:
         return decayStep;
     }
 
+    int getDecayFactors() {
+        return decayFactors;
+    }
+
     int getStateSize() {
         return state.size();
     }
@@ -77,6 +84,14 @@ public:
             return state.size();
         }
         return -1;
+    }
+
+    // for LDM pentester to get the index for a given decay variable
+    int getDecayIndex(SVar var) {
+        if (decayStep > 0 && decayFactors > 0 && var.learnDecayMulti > -1) {
+            return state.size() + var.learnDecayMulti;
+        }
+        throw std::invalid_argument("Provided SVar to getDecayIndex has no learnDecayMulti");
     }
 
     SVar getStateVar(int index) {
@@ -165,6 +180,10 @@ public:
 
     void setDecayStep(float d) {
         decayStep = d;
+    }
+
+    void setDecayFactors(int df) {
+        decayFactors = df;
     }
     
     void addStateVar(SVar var) {
@@ -299,6 +318,17 @@ public:
     // for LD pen-testing
     float getDecayValue() {
         int decayIndex = getDecayIndex();
+        if (decayIndex > -1) {
+            return opptState_[decayIndex] * decayStep;
+        } else {
+            std::cout<<"getDecayValue called without decay step > 0"<<std::endl;
+            exit(1);
+        }
+    }
+
+    // for LDM pen-testing
+    float getDecayValue(SVar var) {
+        int decayIndex = getDecayIndex(var);
         if (decayIndex > -1) {
             return opptState_[decayIndex] * decayStep;
         } else {

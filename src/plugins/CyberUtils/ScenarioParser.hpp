@@ -26,6 +26,7 @@ public:
         scenario = new Scenario();
         parseDiscount();
         parseDecayStep();
+        parseDecayFactors();
         parseStateSpace();
         parseObservationSpace();
         parseActionSpace();
@@ -61,6 +62,13 @@ public:
         }
     }
 
+    void parseDecayFactors() {
+        if (root["decay_factors"]) {
+            int decayFactors = root["decay_factors"].as<int>();
+            scenario->setDecayFactors(decayFactors);
+        }
+    }
+
     void parseStateSpace() {
         YAML::Node state = root["state_space"];
         for(YAML::const_iterator si = state.begin(); si != state.end(); ++si) {
@@ -70,8 +78,19 @@ public:
             if (si->second["decay"]) {
                 try {
                     var.decay = si->second["decay"].as<float>();
-                } catch (const YAML::BadConversion& e) {
-                    var.learnDecay = si->second["decay"].as<bool>();
+                } catch (const YAML::BadConversion& e1) {
+                    var.decay = 0;
+                    try {
+                        var.learnDecay = si->second["decay"].as<bool>();   
+                    } catch (const YAML::BadConversion& e2) {
+                        var.learnDecay = false;
+                        try {
+                            std::string decayFactor = si->second["decay"].as<std::string>();
+                            var.learnDecayMulti = std::stoi(decayFactor.substr(1));
+                        } catch (const YAML::BadConversion& e3) {
+                            var.learnDecayMulti = -1;
+                        }
+                    }
                 }
             }
             var.fullyObs = (si->second["fully_obs"]) ? si->second["fully_obs"].as<bool>() : false;

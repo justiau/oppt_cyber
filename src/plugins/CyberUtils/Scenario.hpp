@@ -449,7 +449,11 @@ private:
     }
 
     int getActionIndex(std::string aname) {
-        return actionIndex.find(aname)->second;
+        auto ait = actionIndex.find(aname);
+        if (ait != actionIndex.end()){
+            return ait->second;
+        }
+        throw std::invalid_argument("Action name not found in actions");
     }
     
 };

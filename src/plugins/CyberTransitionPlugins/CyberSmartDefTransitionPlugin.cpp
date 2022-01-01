@@ -6,6 +6,7 @@
 #include "CyberActionSpaceDiscretizer.hpp"
 #include <tuple>
 #include <iostream>
+#include <map>
 
 namespace oppt
 {
@@ -68,19 +69,22 @@ public:
         // get random defender action
         int defActionSize = defender->getActionsSize();
         FloatType smartActionRoll = (FloatType) successDist(*(randomGenerator.get()));
-        std::vector<std::string> defActionSpace;
-        if (smartActionRoll < 0.5) {
-            // 50% httpd + ftpd
-            defActionSpace = {"restart_ftpd", "restart_httpd"};
-        } else if (smartActionRoll < 0.8) {
-            // 30% do nothing + monitor
-            defActionSpace = {"do_nothing", "monitor"};
-        } else {
-            // 10% remove sniffer + remove compromised
-            defActionSpace = {"remove_compromised_account", "remove_sniffer"};
+        std::string defActionName;
+        std::map<std::string, float> smartMap {
+            {"do_nothing",0.05},
+            {"monitor",0.05},
+            {"remove_compromised_account",0.05},
+            {"remove_sniffer",0.10},
+            {"restart_ftpd",0.25},
+            {"restart_httpd", 0.50},
+        };
+        for (auto const& mit : smartMap) {
+            if (smartActionRoll < mit.second) {
+                defActionName = mit.first;
+                break;
+            }
+            smartActionRoll -= mit.second;
         }
-        std::uniform_int_distribution<> defActionDist(0,defActionSpace.size() - 1);
-        std::string defActionName = defActionSpace[defActionDist(*(randomGenerator.get()))];
         // perform action
         SAction defAction = defender->getAction(defActionName);
         FloatType defActionProb = defAction.probSuccess_;
